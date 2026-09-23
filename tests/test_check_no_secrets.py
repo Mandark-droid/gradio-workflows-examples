@@ -58,3 +58,25 @@ def test_scan_repo_finds_a_real_leak(tmp_path):
     (tmp_path / "bad.py").write_text("/home/someone/x", encoding="utf-8")
     results = scan_repo(tmp_path, [])
     assert len(results) == 1 and results[0][0].name == "bad.py"
+
+
+def test_common_words_do_not_blind_the_scanner():
+    findings = scan_text("findings: hf_" + "a" * 34, [])
+    assert [f.kind for f in findings] == ["token"]
+
+
+def test_tmp_path_does_not_blind_the_scanner():
+    findings = scan_text("tmp_path = '/home/someone/x'", [])
+    assert [f.kind for f in findings] == ["abs_path"]
+
+
+def test_deny_term_is_caught_alongside_common_words():
+    findings = scan_text("the findings mention SecretProject", ["secretproject"])
+    assert [f.kind for f in findings] == ["deny_term"]
+
+
+def test_scanner_own_test_file_is_exempt(tmp_path):
+    (tmp_path / "tests").mkdir()
+    target = tmp_path / "tests" / "test_check_no_secrets.py"
+    target.write_text("/home/someone/x", encoding="utf-8")
+    assert scan_repo(tmp_path, []) == []

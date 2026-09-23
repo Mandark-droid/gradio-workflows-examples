@@ -33,8 +33,14 @@ ALLOWLIST_SUBSTRINGS = (
     "ALLOWLIST_SUBSTRINGS",
     "check_no_secrets",
     "secretscan-deny",
-    "findings",
-    "tmp_path",
+)
+
+# Files that legitimately contain pattern examples rather than real
+# secrets: the scanner's own tests, and the design docs that quote
+# path patterns as documentation.
+EXEMPT_PATHS = (
+    "tests/test_check_no_secrets.py",
+    "docs/",
 )
 
 
@@ -116,6 +122,9 @@ def scan_repo(root: Path, deny_terms: list[str]) -> list[tuple[Path, Finding]]:
     results: list[tuple[Path, Finding]] = []
     for path in _tracked_files(root):
         if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
+            continue
+        rel = path.relative_to(root).as_posix()
+        if any(rel == e or rel.startswith(e) for e in EXEMPT_PATHS):
             continue
         try:
             text = path.read_text(encoding="utf-8")
