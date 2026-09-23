@@ -53,3 +53,31 @@ def test_parser_failure_falls_back_rather_than_raising(monkeypatch):
     monkeypatch.setattr(sandhi, "_run_parser", _boom)
     out = json.loads(sandhi.sandhi_split(json.dumps({"iast": "rāma"})))
     assert out["truncated"] is True
+
+
+def test_timeout_returns_promptly_rather_than_waiting_for_the_parse(monkeypatch):
+    import time
+
+    monkeypatch.setattr(
+        sandhi, "load_config",
+        lambda: {"sandhi": {"timeout_seconds": 0.3, "top_k": 3}},
+    )
+
+    def _slow(*args, **kwargs):
+        time.sleep(3.0)
+        return [["x"]]
+
+    monkeypatch.setattr(sandhi, "_run_parser", _slow)
+
+    started = time.perf_counter()
+    out = json.loads(sandhi.sandhi_split(json.dumps({"iast": "dharmakṣetre kurukṣetre"})))
+    elapsed = time.perf_counter() - started
+
+    assert out["truncated"] is True
+    assert elapsed < 1.5, f"timeout did not bound wall clock: {elapsed:.2f}s"
+
+
+def test_parser_logging_does_not_flood_stderr(capfd):
+    sandhi.sandhi_split(json.dumps({"iast": "dharmakṣetre kurukṣetre"}))
+    captured = capfd.readouterr()
+    assert len(captured.err) < 20000, f"{len(captured.err)} bytes of log output"

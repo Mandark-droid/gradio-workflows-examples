@@ -22,11 +22,24 @@ logging.getLogger("sanskrit_parser").setLevel(logging.ERROR)
 _parser = None
 
 
+def _silence_parser_logging() -> None:
+    """The library's submodules set DEBUG on their own child loggers at import
+    time, so setting only the parent's level has no effect — one split emitted
+    roughly 392 KB of DEBUG output to stderr. Levels must be set on each child
+    that exists once the import has happened."""
+    for name in list(logging.root.manager.loggerDict):
+        if name == "sanskrit_parser" or name.startswith("sanskrit_parser."):
+            child = logging.getLogger(name)
+            child.setLevel(logging.ERROR)
+            child.propagate = False
+
+
 def _get_parser():
     global _parser
     if _parser is None:
         from sanskrit_parser import Parser
 
+        _silence_parser_logging()
         _parser = Parser()
     return _parser
 
@@ -56,10 +69,15 @@ def sandhi_split(normalized_json: str) -> str:
     if not iast:
         return json.dumps({"splits": [], "truncated": False}, ensure_ascii=False)
 
+    # Not a context manager: __exit__ would shutdown(wait=True) and block until
+    # a runaway parse finished, defeating the cap. A thread cannot be killed, so
+    # an overrunning parse is abandoned to finish on its own while the caller
+    # returns immediately with the unsplit fallback.
+    pool = ThreadPoolExecutor(max_workers=1)
     try:
-        with ThreadPoolExecutor(max_workers=1) as pool:
-            candidates = pool.submit(_run_parser, iast, top_k).result(timeout=timeout)
+        candidates = pool.submit(_run_parser, iast, top_k).result(timeout=timeout)
     except Exception:
+        pool.shutdown(wait=False)
         return json.dumps(
             {
                 "splits": [
@@ -69,6 +87,7 @@ def sandhi_split(normalized_json: str) -> str:
             },
             ensure_ascii=False,
         )
+    pool.shutdown(wait=False)
 
     if not candidates:
         return json.dumps(
