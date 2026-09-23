@@ -52,13 +52,42 @@ def _resolve_token() -> str | None:
     return os.environ.get("HF_TOKEN") or get_token()
 
 
+def _as_dict(item) -> dict:
+    """A subject arrives as a JSON string or an already-parsed object."""
+    if isinstance(item, str):
+        try:
+            parsed = json.loads(item)
+        except json.JSONDecodeError:
+            return {}
+        return parsed if isinstance(parsed, dict) else {}
+    return item if isinstance(item, dict) else {}
+
+
+def _merge_subjects(result) -> dict:
+    """/scores returns three subjects and no single one carries everything.
+
+    scores has `wins` but no latency or pairs; verdict has latency and pairs
+    but no wins. Keeping only result[0] silently empties every latency and
+    judge figure in the analysis, so the record is assembled from all three.
+    """
+    if not isinstance(result, (list, tuple)):
+        result = [result]
+    scores = _as_dict(result[0]) if len(result) > 0 else {}
+    latency = _as_dict(result[1]) if len(result) > 1 else {}
+    verdict = _as_dict(result[2]) if len(result) > 2 else {}
+
+    merged = dict(scores)
+    merged["latency"] = latency or verdict.get("latency") or {}
+    merged["pairs"] = verdict.get("pairs") or []
+    return merged
+
+
 def _run_row(client, row_index: int) -> dict:
     last_error = ""
     for attempt in range(MAX_RETRIES + 1):
         try:
             result = client.predict(row_index, api_name="/scores")
-            scores = result[0] if isinstance(result, (list, tuple)) else result
-            return json.loads(scores) if isinstance(scores, str) else scores
+            return _merge_subjects(result)
         except Exception as exc:
             last_error = f"{type(exc).__name__}: {exc}"
             if attempt < MAX_RETRIES:

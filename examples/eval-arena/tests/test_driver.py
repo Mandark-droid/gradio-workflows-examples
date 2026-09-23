@@ -90,3 +90,56 @@ def test_ceiling_refuses_before_making_any_call(tmp_path, monkeypatch):
                        max_calls=100, workers=1, assume_yes=True)
     assert rc == 1
     assert calls == [], "made calls despite exceeding the ceiling"
+
+
+def test_merge_subjects_keeps_wins_latency_and_pairs():
+    import json as _json
+    from driver.run_batch import _merge_subjects
+
+    scores = _json.dumps({"row_id": "r1", "per_model": {"m1": {"score": 1.0}},
+                          "wins": {"m1": 1}, "candidate_config_hash": "abc"})
+    latency = _json.dumps({"m1": {"latency_ms": 120, "tokens_out": 20,
+                                  "reasoning_chars": 300}})
+    verdict = _json.dumps({"row_id": "r1", "pairs": [{"a": "m1", "b": "m2",
+                                                      "winner": "m1", "agreed": True}],
+                           "latency": {"m1": {"latency_ms": 120}}})
+
+    merged = _merge_subjects([scores, latency, verdict])
+    assert merged["wins"] == {"m1": 1}
+    assert merged["latency"]["m1"]["latency_ms"] == 120
+    assert merged["latency"]["m1"]["reasoning_chars"] == 300
+    assert merged["pairs"][0]["winner"] == "m1"
+    assert merged["candidate_config_hash"] == "abc"
+
+
+def test_merge_subjects_survives_a_single_payload():
+    from driver.run_batch import _merge_subjects
+
+    merged = _merge_subjects('{"row_id": "r1", "wins": {}}')
+    assert merged["row_id"] == "r1"
+    assert merged["latency"] == {} and merged["pairs"] == []
+
+
+def test_analysis_sees_latency_and_pairs_from_a_merged_record(tmp_path):
+    """The regression this fix exists for: a record built by _merge_subjects
+    must produce non-empty latency percentiles and Bradley-Terry ratings."""
+    import json as _json
+    from driver.checkpoint import append
+    from driver.run_batch import _merge_subjects
+
+    scores = _json.dumps({"row_id": "r1", "per_model": {"m1": {"score": 1.0}},
+                          "wins": {"m1": 1}})
+    latency = _json.dumps({"m1": {"latency_ms": 120, "tokens_out": 20,
+                                  "reasoning_chars": 300}})
+    verdict = _json.dumps({"pairs": [{"a": "m1", "b": "m2", "winner": "m1",
+                                      "agreed": True}]})
+    record = _merge_subjects([scores, latency, verdict])
+
+    path = tmp_path / "run.jsonl"
+    append(path, 0, record)
+
+    from driver.analyse import bradley_terry, percentiles
+
+    payload = _json.loads(path.read_text(encoding="utf-8").splitlines()[0])["payload"]
+    assert percentiles([float(e["latency_ms"]) for e in payload["latency"].values()])["p50"] == 120.0
+    assert bradley_terry(payload["pairs"])["m1"] > bradley_terry(payload["pairs"])["m2"]
