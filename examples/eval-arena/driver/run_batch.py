@@ -82,11 +82,11 @@ def _merge_subjects(result) -> dict:
     return merged
 
 
-def _run_row(client, row_index: int) -> dict:
+def _run_row(client, row_index: int, hf_token: str = "") -> dict:
     last_error = ""
     for attempt in range(MAX_RETRIES + 1):
         try:
-            result = client.predict(row_index, api_name="/scores")
+            result = client.predict(row_index, hf_token, api_name="/scores")
             return _merge_subjects(result)
         except Exception as exc:
             last_error = f"{type(exc).__name__}: {exc}"
@@ -136,7 +136,7 @@ def run(
     wf_hash, cfg_hash = workflow_hash(), arena_io.config_hash()
 
     def _task(row_index: int) -> tuple[int, dict]:
-        payload = _run_row(client, row_index)
+        payload = _run_row(client, row_index, token)
         payload["workflow_json_hash"] = wf_hash
         payload["candidate_config_hash"] = cfg_hash
         return row_index, payload

@@ -7,6 +7,12 @@
       "inputs": [{"id": "in", "label": "Number", "type": "number"}],
       "outputs": [{"id": "out", "label": "Number", "type": "number"}],
       "data": {"out": 0}, "x": 40, "y": 260
+    },
+    {
+      "id": "ref_hf_token", "label": "HF Token", "role": "reference", "asset_type": "text",
+      "inputs": [{"id": "in", "label": "Text", "type": "text"}],
+      "outputs": [{"id": "out", "label": "Text", "type": "text"}],
+      "data": {"out": ""}, "x": 40, "y": 440
     }
   ],
   "operators": [
@@ -43,19 +49,28 @@
     },
     {
       "id": "op_cand_a", "label": "Candidate A", "role": "operator", "kind": "fn", "fn": "candidate_a",
-      "inputs": [{"id": "prompt", "label": "Prompt", "type": "text", "required": true}],
+      "inputs": [
+        {"id": "prompt", "label": "Prompt", "type": "text", "required": true},
+        {"id": "hf_token", "label": "HF Token", "type": "text", "required": false}
+      ],
       "outputs": [{"id": "out_0", "label": "Envelope", "type": "text", "output_index": 0}],
       "data": {}, "x": 840, "y": 40
     },
     {
       "id": "op_cand_b", "label": "Candidate B", "role": "operator", "kind": "fn", "fn": "candidate_b",
-      "inputs": [{"id": "prompt", "label": "Prompt", "type": "text", "required": true}],
+      "inputs": [
+        {"id": "prompt", "label": "Prompt", "type": "text", "required": true},
+        {"id": "hf_token", "label": "HF Token", "type": "text", "required": false}
+      ],
       "outputs": [{"id": "out_0", "label": "Envelope", "type": "text", "output_index": 0}],
       "data": {}, "x": 840, "y": 160
     },
     {
       "id": "op_cand_c", "label": "Candidate C", "role": "operator", "kind": "fn", "fn": "candidate_c",
-      "inputs": [{"id": "prompt", "label": "Prompt", "type": "text", "required": true}],
+      "inputs": [
+        {"id": "prompt", "label": "Prompt", "type": "text", "required": true},
+        {"id": "hf_token", "label": "HF Token", "type": "text", "required": false}
+      ],
       "outputs": [{"id": "out_0", "label": "Envelope", "type": "text", "output_index": 0}],
       "data": {}, "x": 840, "y": 280
     },
@@ -76,7 +91,8 @@
         {"id": "env_a", "label": "Envelope A", "type": "text", "required": true},
         {"id": "env_b", "label": "Envelope B", "type": "text", "required": true},
         {"id": "env_c", "label": "Envelope C", "type": "text", "required": true},
-        {"id": "prompt", "label": "Prompt", "type": "text", "required": true}
+        {"id": "prompt", "label": "Prompt", "type": "text", "required": true},
+        {"id": "hf_token", "label": "HF Token", "type": "text", "required": false}
       ],
       "outputs": [{"id": "out_0", "label": "Verdict JSON", "type": "text", "output_index": 0}],
       "data": {}, "x": 1140, "y": 120
@@ -144,6 +160,10 @@
     {"id": "e22", "from_node_id": "op_dataset", "from_port_id": "out_id", "to_node_id": "op_aggregate", "to_port_id": "row_id", "type": "text"},
     {"id": "e23", "from_node_id": "op_aggregate", "from_port_id": "out_0", "to_node_id": "sub_scores", "to_port_id": "in", "type": "text"},
     {"id": "e24", "from_node_id": "op_aggregate", "from_port_id": "out_1", "to_node_id": "sub_latency", "to_port_id": "in", "type": "text"},
-    {"id": "e25", "from_node_id": "op_aggregate", "from_port_id": "out_2", "to_node_id": "sub_verdict", "to_port_id": "in", "type": "text"}
+    {"id": "e25", "from_node_id": "op_aggregate", "from_port_id": "out_2", "to_node_id": "sub_verdict", "to_port_id": "in", "type": "text"},
+    {"id": "e26", "from_node_id": "ref_hf_token", "from_port_id": "out", "to_node_id": "op_cand_a", "to_port_id": "hf_token", "type": "text"},
+    {"id": "e27", "from_node_id": "ref_hf_token", "from_port_id": "out", "to_node_id": "op_cand_b", "to_port_id": "hf_token", "type": "text"},
+    {"id": "e28", "from_node_id": "ref_hf_token", "from_port_id": "out", "to_node_id": "op_cand_c", "to_port_id": "hf_token", "type": "text"},
+    {"id": "e29", "from_node_id": "ref_hf_token", "from_port_id": "out", "to_node_id": "op_judge", "to_port_id": "hf_token", "type": "text"}
   ]
 }

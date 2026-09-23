@@ -72,9 +72,9 @@ def test_the_only_endpoint_is_scores(graph):
     assert names == ["scores"]
 
 
-def test_row_idx_is_the_only_endpoint_parameter(graph):
+def test_row_idx_and_hf_token_are_the_only_endpoint_parameters(graph):
     from gradio.workflow_api import WorkflowGraph, subject_groups, group_free_inputs
 
     wg = WorkflowGraph(graph)
     frees = group_free_inputs(wg, subject_groups(wg)[0])
-    assert [f["node"]["id"] for f in frees] == ["ref_row_idx"]
+    assert [f["node"]["id"] for f in frees] == ["ref_row_idx", "ref_hf_token"]

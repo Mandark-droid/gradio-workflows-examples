@@ -80,3 +80,24 @@ def test_wrappers_delegate_to_their_slots(monkeypatch):
 def test_unknown_slot_yields_an_error_envelope_not_a_crash():
     envelope = json.loads(candidate.run_candidate("z", "hi"))
     assert envelope["error"]
+
+
+def test_caller_token_is_passed_through_to_chat(monkeypatch):
+    seen = {}
+
+    def _capture(model_id, prompt, max_new_tokens, greedy, hf_token=""):
+        seen["token"] = hf_token
+        return ("ok", 1, 1, 0)
+
+    monkeypatch.setattr(arena_io, "chat", _capture)
+    candidate.candidate_a("hi", "hf_visitor_token")
+    assert seen["token"] == "hf_visitor_token"
+
+
+def test_error_envelope_never_contains_the_token(monkeypatch):
+    def _boom(*a, **k):
+        raise RuntimeError("provider exploded")
+
+    monkeypatch.setattr(arena_io, "chat", _boom)
+    envelope = candidate.run_candidate("a", "hi", "hf_secret_abc")
+    assert "hf_secret_abc" not in envelope

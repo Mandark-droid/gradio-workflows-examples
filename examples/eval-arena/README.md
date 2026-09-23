@@ -19,6 +19,21 @@ the canvas instead of buried in a JSONL dump.
 
 Built with [`gr.Workflow`](https://gradio.app/guides/workflows).
 
+## Bring your own token
+
+The three candidates and the judge call Inference Providers, which needs a
+Hugging Face token. Paste one into the **HF Token** box on the canvas and it is
+used for that run, so you spend your own quota rather than the Space owner's.
+A token with `inference.serverless.write` is enough. Without one, every
+candidate returns an `error` failure tag and the row scores zero.
+
+**Two honest caveats.** `gr.Workflow` port types have no password variant, so
+the box renders as ordinary text — your token is visible on screen while you
+type it. And the canvas autosaves the graph for anyone with write access, so if
+you own this Space, do not save after entering a token: it would be written
+into `workflow.json`. The committed file ships with that field empty and it
+should stay that way.
+
 ## Swapping a candidate
 
 Edit one line in `candidates.yaml`:

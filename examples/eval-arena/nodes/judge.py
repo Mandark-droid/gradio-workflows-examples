@@ -69,7 +69,7 @@ def _parse_verdict(text: str) -> dict:
     }
 
 
-def _ask(prompt_text: str, answer_a: str, answer_b: str) -> dict:
+def _ask(prompt_text: str, answer_a: str, answer_b: str, hf_token: str = "") -> dict:
     cfg = arena_io.load_candidates()["judge"]
     prompt = JUDGE_TEMPLATE.format(
         prompt=prompt_text, answer_a=answer_a, answer_b=answer_b,
@@ -77,7 +77,7 @@ def _ask(prompt_text: str, answer_a: str, answer_b: str) -> dict:
     )
     try:
         text, _, _, _ = arena_io.chat(
-            cfg["model_id"], prompt, int(cfg["max_new_tokens"]), True
+            cfg["model_id"], prompt, int(cfg["max_new_tokens"]), True, hf_token
         )
     except Exception:
         return {"winner": "TIE", "confidence": 0.0, "rationale": ""}
@@ -89,7 +89,7 @@ def _cap_words(text: str, cap: int) -> str:
     return " ".join(words[:cap])
 
 
-def pairwise_judge(env_a: str, env_b: str, env_c: str, prompt: str) -> str:
+def pairwise_judge(env_a: str, env_b: str, env_c: str, prompt: str, hf_token: str = "") -> str:
     cfg = arena_io.load_candidates()["judge"]
     cap = int(cfg["max_rationale_words"])
 
@@ -109,7 +109,9 @@ def pairwise_judge(env_a: str, env_b: str, env_c: str, prompt: str) -> str:
     # are done, which is fine since we need every verdict before scoring
     # the pairs. What must never happen is dispatching one job at a time.
     with ThreadPoolExecutor(max_workers=6) as pool:
-        futures = [pool.submit(_ask, prompt, job[2], job[3]) for job in jobs]
+        futures = [
+            pool.submit(_ask, prompt, job[2], job[3], hf_token) for job in jobs
+        ]
         verdicts = [future.result() for future in futures]
 
     pairs = []

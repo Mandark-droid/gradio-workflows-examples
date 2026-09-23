@@ -50,7 +50,7 @@ def _envelope(
     )
 
 
-def run_candidate(slot_name: str, prompt: str) -> str:
+def run_candidate(slot_name: str, prompt: str, hf_token: str = "") -> str:
     try:
         config = arena_io.slot(slot_name)
     except KeyError as exc:
@@ -63,6 +63,7 @@ def run_candidate(slot_name: str, prompt: str) -> str:
             str(prompt or ""),
             int(config["max_new_tokens"]),
             bool(config["greedy"]),
+            hf_token,
         )
     except Exception as exc:
         # A dead provider must not fail the row; the scorer sees the error tag.
@@ -71,13 +72,13 @@ def run_candidate(slot_name: str, prompt: str) -> str:
     return _envelope(model_id, text, latency_ms, tokens_out, reasoning_chars, None)
 
 
-def candidate_a(prompt: str) -> str:
-    return run_candidate("a", prompt)
+def candidate_a(prompt: str, hf_token: str = "") -> str:
+    return run_candidate("a", prompt, hf_token)
 
 
-def candidate_b(prompt: str) -> str:
-    return run_candidate("b", prompt)
+def candidate_b(prompt: str, hf_token: str = "") -> str:
+    return run_candidate("b", prompt, hf_token)
 
 
-def candidate_c(prompt: str) -> str:
-    return run_candidate("c", prompt)
+def candidate_c(prompt: str, hf_token: str = "") -> str:
+    return run_candidate("c", prompt, hf_token)

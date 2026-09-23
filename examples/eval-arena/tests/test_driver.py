@@ -62,7 +62,7 @@ def test_resume_does_not_call_the_endpoint_for_completed_rows(tmp_path, monkeypa
 
     calls = []
 
-    def _fake_run_row(client, row_index):
+    def _fake_run_row(client, row_index, hf_token=""):
         calls.append(row_index)
         return {"row_id": f"row{row_index}"}
 

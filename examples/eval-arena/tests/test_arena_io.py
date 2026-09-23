@@ -69,3 +69,21 @@ def test_config_hash_changes_when_a_candidate_changes(monkeypatch):
     monkeypatch.setitem(cfg["candidates"][0], "model_id", "other/model")
     arena_io.config_hash.cache_clear()
     assert arena_io.config_hash() != before
+
+
+def test_caller_token_is_excluded_from_the_fixture_key():
+    a = arena_io.fixture_key("chat", "m", ("hello", 8, True))
+    arena_io.write_fixture(a, {"text": "hi", "latency_ms": 1, "tokens_out": 1,
+                               "reasoning_chars": 0})
+    # Two different callers, two different tokens, one shared recording.
+    assert arena_io.chat("m", "hello", 8, True, "hf_tokenAAA") == ("hi", 1, 1, 0)
+    assert arena_io.chat("m", "hello", 8, True, "hf_tokenBBB") == ("hi", 1, 1, 0)
+
+
+def test_caller_token_is_never_written_to_a_fixture(tmp_path):
+    key = arena_io.fixture_key("chat", "m", ("p", 8, True))
+    arena_io.write_fixture(key, {"text": "t", "latency_ms": 1, "tokens_out": 1,
+                                 "reasoning_chars": 0})
+    arena_io.chat("m", "p", 8, True, "hf_secretvalue123")
+    blob = (arena_io.FIXTURE_DIR / f"{key}.json").read_text(encoding="utf-8")
+    assert "hf_secretvalue123" not in blob

@@ -73,9 +73,18 @@ def _hf_token() -> str | None:
 
 
 def chat(
-    model_id: str, prompt: str, max_new_tokens: int, greedy: bool
+    model_id: str,
+    prompt: str,
+    max_new_tokens: int,
+    greedy: bool,
+    hf_token: str = "",
 ) -> tuple[str, int, int, int]:
     """One chat completion. Returns (text, latency_ms, tokens_out, reasoning_chars).
+
+    `hf_token` is a caller-supplied credential so a visitor spends their own
+    Inference Providers quota. It is deliberately excluded from the fixture key
+    and never written to a fixture, so two visitors share one recording and no
+    credential reaches disk.
 
     Several candidates are reasoning models: they emit chain-of-thought into
     reasoning_content (field name varies by provider) and put only the final
@@ -97,7 +106,7 @@ def chat(
 
     from huggingface_hub import InferenceClient
 
-    client = InferenceClient(token=_hf_token())
+    client = InferenceClient(token=(hf_token or "").strip() or _hf_token())
     started = time.perf_counter()
     response = client.chat_completion(
         messages=[{"role": "user", "content": prompt}],
