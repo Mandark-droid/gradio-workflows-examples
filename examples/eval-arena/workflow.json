@@ -1,0 +1,149 @@
+{
+  "schema_version": "2",
+  "name": "Hot-Swappable Model Eval Arena",
+  "references": [
+    {
+      "id": "ref_row_idx", "label": "Row Index", "role": "reference", "asset_type": "number",
+      "inputs": [{"id": "in", "label": "Number", "type": "number"}],
+      "outputs": [{"id": "out", "label": "Number", "type": "number"}],
+      "data": {"out": 0}, "x": 40, "y": 260
+    }
+  ],
+  "operators": [
+    {
+      "id": "op_dataset", "label": "Eval Row", "role": "operator", "kind": "dataset",
+      "dataset_id": "kshitijthakkar/gradio-workflow-eval-arena", "dataset_config": "default", "dataset_split": "train",
+      "inputs": [{"id": "row_index", "label": "Row Index", "type": "number", "required": true}],
+      "outputs": [
+        {"id": "out_id", "label": "id", "type": "text", "output_index": 0},
+        {"id": "out_task_type", "label": "task_type", "type": "text", "output_index": 1},
+        {"id": "out_prompt", "label": "prompt", "type": "text", "output_index": 2},
+        {"id": "out_gold", "label": "gold", "type": "text", "output_index": 3},
+        {"id": "out_meta", "label": "meta", "type": "text", "output_index": 4}
+      ],
+      "data": {}, "x": 280, "y": 260
+    },
+    {
+      "id": "op_prompt", "label": "Prompt Builder", "role": "operator", "kind": "fn", "fn": "prompt_builder",
+      "inputs": [
+        {"id": "task_type", "label": "Task Type", "type": "text", "required": true},
+        {"id": "prompt", "label": "Prompt", "type": "text", "required": true}
+      ],
+      "outputs": [{"id": "out_0", "label": "Prompt", "type": "text", "output_index": 0}],
+      "data": {}, "x": 560, "y": 160
+    },
+    {
+      "id": "op_gold", "label": "Gold Extract", "role": "operator", "kind": "fn", "fn": "gold_extract",
+      "inputs": [
+        {"id": "gold", "label": "Gold", "type": "text", "required": true},
+        {"id": "task_type", "label": "Task Type", "type": "text", "required": true}
+      ],
+      "outputs": [{"id": "out_0", "label": "Gold JSON", "type": "text", "output_index": 0}],
+      "data": {}, "x": 560, "y": 560
+    },
+    {
+      "id": "op_cand_a", "label": "Candidate A", "role": "operator", "kind": "fn", "fn": "candidate_a",
+      "inputs": [{"id": "prompt", "label": "Prompt", "type": "text", "required": true}],
+      "outputs": [{"id": "out_0", "label": "Envelope", "type": "text", "output_index": 0}],
+      "data": {}, "x": 840, "y": 40
+    },
+    {
+      "id": "op_cand_b", "label": "Candidate B", "role": "operator", "kind": "fn", "fn": "candidate_b",
+      "inputs": [{"id": "prompt", "label": "Prompt", "type": "text", "required": true}],
+      "outputs": [{"id": "out_0", "label": "Envelope", "type": "text", "output_index": 0}],
+      "data": {}, "x": 840, "y": 160
+    },
+    {
+      "id": "op_cand_c", "label": "Candidate C", "role": "operator", "kind": "fn", "fn": "candidate_c",
+      "inputs": [{"id": "prompt", "label": "Prompt", "type": "text", "required": true}],
+      "outputs": [{"id": "out_0", "label": "Envelope", "type": "text", "output_index": 0}],
+      "data": {}, "x": 840, "y": 280
+    },
+    {
+      "id": "op_scorer", "label": "Deterministic Scorer", "role": "operator", "kind": "fn", "fn": "deterministic_scorer",
+      "inputs": [
+        {"id": "env_a", "label": "Envelope A", "type": "text", "required": true},
+        {"id": "env_b", "label": "Envelope B", "type": "text", "required": true},
+        {"id": "env_c", "label": "Envelope C", "type": "text", "required": true},
+        {"id": "gold_json", "label": "Gold JSON", "type": "text", "required": true}
+      ],
+      "outputs": [{"id": "out_0", "label": "Scores JSON", "type": "text", "output_index": 0}],
+      "data": {}, "x": 1140, "y": 440
+    },
+    {
+      "id": "op_judge", "label": "Pairwise Judge", "role": "operator", "kind": "fn", "fn": "pairwise_judge",
+      "inputs": [
+        {"id": "env_a", "label": "Envelope A", "type": "text", "required": true},
+        {"id": "env_b", "label": "Envelope B", "type": "text", "required": true},
+        {"id": "env_c", "label": "Envelope C", "type": "text", "required": true},
+        {"id": "prompt", "label": "Prompt", "type": "text", "required": true}
+      ],
+      "outputs": [{"id": "out_0", "label": "Verdict JSON", "type": "text", "output_index": 0}],
+      "data": {}, "x": 1140, "y": 120
+    },
+    {
+      "id": "op_aggregate", "label": "Aggregate", "role": "operator", "kind": "fn", "fn": "aggregate",
+      "inputs": [
+        {"id": "scorer_json", "label": "Scorer JSON", "type": "text", "required": true},
+        {"id": "judge_json", "label": "Judge JSON", "type": "text", "required": true},
+        {"id": "env_a", "label": "Envelope A", "type": "text", "required": true},
+        {"id": "env_b", "label": "Envelope B", "type": "text", "required": true},
+        {"id": "env_c", "label": "Envelope C", "type": "text", "required": true},
+        {"id": "row_id", "label": "Row Id", "type": "text", "required": true}
+      ],
+      "outputs": [
+        {"id": "out_0", "label": "Scores", "type": "text", "output_index": 0},
+        {"id": "out_1", "label": "Latency", "type": "text", "output_index": 1},
+        {"id": "out_2", "label": "Verdict", "type": "text", "output_index": 2}
+      ],
+      "data": {}, "x": 1440, "y": 280
+    }
+  ],
+  "subjects": [
+    {
+      "id": "sub_scores", "label": "Scores", "role": "subject", "asset_type": "text",
+      "inputs": [{"id": "in", "label": "Text", "type": "text"}],
+      "outputs": [{"id": "out", "label": "Text", "type": "text"}],
+      "data": {}, "x": 1740, "y": 160
+    },
+    {
+      "id": "sub_latency", "label": "Latency", "role": "subject", "asset_type": "text",
+      "inputs": [{"id": "in", "label": "Text", "type": "text"}],
+      "outputs": [{"id": "out", "label": "Text", "type": "text"}],
+      "data": {}, "x": 1740, "y": 280
+    },
+    {
+      "id": "sub_verdict", "label": "Verdict", "role": "subject", "asset_type": "text",
+      "inputs": [{"id": "in", "label": "Text", "type": "text"}],
+      "outputs": [{"id": "out", "label": "Text", "type": "text"}],
+      "data": {}, "x": 1740, "y": 400
+    }
+  ],
+  "edges": [
+    {"id": "e01", "from_node_id": "ref_row_idx", "from_port_id": "out", "to_node_id": "op_dataset", "to_port_id": "row_index", "type": "number"},
+    {"id": "e02", "from_node_id": "op_dataset", "from_port_id": "out_task_type", "to_node_id": "op_prompt", "to_port_id": "task_type", "type": "text"},
+    {"id": "e03", "from_node_id": "op_dataset", "from_port_id": "out_prompt", "to_node_id": "op_prompt", "to_port_id": "prompt", "type": "text"},
+    {"id": "e04", "from_node_id": "op_dataset", "from_port_id": "out_gold", "to_node_id": "op_gold", "to_port_id": "gold", "type": "text"},
+    {"id": "e05", "from_node_id": "op_dataset", "from_port_id": "out_task_type", "to_node_id": "op_gold", "to_port_id": "task_type", "type": "text"},
+    {"id": "e06", "from_node_id": "op_prompt", "from_port_id": "out_0", "to_node_id": "op_cand_a", "to_port_id": "prompt", "type": "text"},
+    {"id": "e07", "from_node_id": "op_prompt", "from_port_id": "out_0", "to_node_id": "op_cand_b", "to_port_id": "prompt", "type": "text"},
+    {"id": "e08", "from_node_id": "op_prompt", "from_port_id": "out_0", "to_node_id": "op_cand_c", "to_port_id": "prompt", "type": "text"},
+    {"id": "e09", "from_node_id": "op_cand_a", "from_port_id": "out_0", "to_node_id": "op_scorer", "to_port_id": "env_a", "type": "text"},
+    {"id": "e10", "from_node_id": "op_cand_b", "from_port_id": "out_0", "to_node_id": "op_scorer", "to_port_id": "env_b", "type": "text"},
+    {"id": "e11", "from_node_id": "op_cand_c", "from_port_id": "out_0", "to_node_id": "op_scorer", "to_port_id": "env_c", "type": "text"},
+    {"id": "e12", "from_node_id": "op_gold", "from_port_id": "out_0", "to_node_id": "op_scorer", "to_port_id": "gold_json", "type": "text"},
+    {"id": "e13", "from_node_id": "op_cand_a", "from_port_id": "out_0", "to_node_id": "op_judge", "to_port_id": "env_a", "type": "text"},
+    {"id": "e14", "from_node_id": "op_cand_b", "from_port_id": "out_0", "to_node_id": "op_judge", "to_port_id": "env_b", "type": "text"},
+    {"id": "e15", "from_node_id": "op_cand_c", "from_port_id": "out_0", "to_node_id": "op_judge", "to_port_id": "env_c", "type": "text"},
+    {"id": "e16", "from_node_id": "op_prompt", "from_port_id": "out_0", "to_node_id": "op_judge", "to_port_id": "prompt", "type": "text"},
+    {"id": "e17", "from_node_id": "op_scorer", "from_port_id": "out_0", "to_node_id": "op_aggregate", "to_port_id": "scorer_json", "type": "text"},
+    {"id": "e18", "from_node_id": "op_judge", "from_port_id": "out_0", "to_node_id": "op_aggregate", "to_port_id": "judge_json", "type": "text"},
+    {"id": "e19", "from_node_id": "op_cand_a", "from_port_id": "out_0", "to_node_id": "op_aggregate", "to_port_id": "env_a", "type": "text"},
+    {"id": "e20", "from_node_id": "op_cand_b", "from_port_id": "out_0", "to_node_id": "op_aggregate", "to_port_id": "env_b", "type": "text"},
+    {"id": "e21", "from_node_id": "op_cand_c", "from_port_id": "out_0", "to_node_id": "op_aggregate", "to_port_id": "env_c", "type": "text"},
+    {"id": "e22", "from_node_id": "op_dataset", "from_port_id": "out_id", "to_node_id": "op_aggregate", "to_port_id": "row_id", "type": "text"},
+    {"id": "e23", "from_node_id": "op_aggregate", "from_port_id": "out_0", "to_node_id": "sub_scores", "to_port_id": "in", "type": "text"},
+    {"id": "e24", "from_node_id": "op_aggregate", "from_port_id": "out_1", "to_node_id": "sub_latency", "to_port_id": "in", "type": "text"},
+    {"id": "e25", "from_node_id": "op_aggregate", "from_port_id": "out_2", "to_node_id": "sub_verdict", "to_port_id": "in", "type": "text"}
+  ]
+}

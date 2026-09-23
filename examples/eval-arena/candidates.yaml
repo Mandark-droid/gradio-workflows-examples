@@ -5,7 +5,7 @@
 # Revisions are written by scripts/pin_revisions.py, never by hand.
 
 dataset:
-  dataset_id: ""          # filled by Task 2 after the dataset is pushed
+  dataset_id: "kshitijthakkar/gradio-workflow-eval-arena"
   dataset_config: default
   dataset_split: train
 
