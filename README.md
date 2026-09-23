@@ -19,10 +19,26 @@ Hugging Face Space.
   resume, run analysis and results publisher are all built; the bundled
   public dataset is the 5-row
   [`kshitijthakkar/gradio-workflow-eval-arena`](https://hf.co/datasets/kshitijthakkar/gradio-workflow-eval-arena),
-  which exists to exercise every scoring path rather than to rank models. The
-  Space card and deploy path are ready, but this example is not yet deployed
-  as a public Space. See that directory's own README for the full mechanism,
-  the swap procedure and its Space card.
+  which exists to exercise every scoring path rather than to rank models. See
+  that directory's own README for the full mechanism, the swap procedure and
+  its Space card.
+
+## Live Spaces
+
+Both examples are deployed and were validated against their real endpoints:
+
+- [`kshitijthakkar/shlokartha-voice-workflow`](https://hf.co/spaces/kshitijthakkar/shlokartha-voice-workflow)
+  — `/verse` returns all six outputs in about 26 s (most of it one CPU
+  generation on an external Space); `/metre_only` returns in under 4 s.
+- [`kshitijthakkar/eval-arena-workflow`](https://hf.co/spaces/kshitijthakkar/eval-arena-workflow)
+  — `/scores` runs one dataset row through three candidates and the judge in
+  about 10 s. Paste your own Hugging Face token into the canvas's **HF Token**
+  box so the run bills your quota rather than the Space owner's.
+
+A five-row batch through the arena, with results published to
+[`kshitijthakkar/eval-arena-runs`](https://hf.co/datasets/kshitijthakkar/eval-arena-runs),
+cost roughly USD 0.07. Any ranking drawn from five rows is not statistically
+meaningful, and the analysis output says so on every run.
 
 Each example directory **is** its Space root: the app, the workflow graph,
 requirements and Space card all live directly under it, so deployment is a
