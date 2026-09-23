@@ -1,0 +1,6 @@
+gradio>=6.28.0
+gradio-client>=2.7.0
+huggingface-hub>=1.32.0
+indic-transliteration>=2.3.82
+sanskrit-parser>=0.2.6
+PyYAML>=6.0
