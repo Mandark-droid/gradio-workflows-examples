@@ -22,7 +22,11 @@ from nodes import hf_io
 from nodes.hf_io import _utf8_stdout
 from nodes.source import asr
 
-VOICES = ["hi-IN-MadhurNeural", "hi-IN-SwaraNeural", "en-IN-PrabhatNeural"]
+VOICES = [
+    "hi-IN-MadhurNeural - hi-IN (Male)",
+    "hi-IN-SwaraNeural - hi-IN (Female)",
+    "en-IN-PrabhatNeural - en-IN (Male)",
+]
 
 
 def main() -> int:

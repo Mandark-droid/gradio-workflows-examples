@@ -18,7 +18,7 @@
       "id": "ref_voice", "label": "Voice", "role": "reference", "asset_type": "text",
       "inputs": [{"id": "in", "label": "Text", "type": "text"}],
       "outputs": [{"id": "out", "label": "Text", "type": "text"}],
-      "data": {"out": "hi-IN-MadhurNeural"}, "x": 40, "y": 400
+      "data": {"out": "hi-IN-MadhurNeural - hi-IN (Male)"}, "x": 40, "y": 400
     },
     {
       "id": "ref_text_b", "label": "Verse Text", "role": "reference", "asset_type": "text",

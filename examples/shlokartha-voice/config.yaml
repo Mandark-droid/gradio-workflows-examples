@@ -16,6 +16,8 @@ shlokartha:
 tts:
   space_id: innoai/Edge-TTS-Text-to-Speech
   api_name: /tts_interface
+  # The runtime value comes from the ref_voice node in workflow.json; this is
+  # the documented default and the value the eval harness should match.
   default_voice: "hi-IN-MadhurNeural - hi-IN (Male)"
   rate: 0
   pitch: 0
