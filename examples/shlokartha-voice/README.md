@@ -64,6 +64,19 @@ upstream beta behaviour, not a bug in this example. If `git status` shows
 `workflow.json` modified after you ran the app and you did not mean to change
 the graph, restore it with `git checkout -- workflow.json`.
 
+## Record, replay, live
+
+Every network call routes through one small layer with three modes, set by
+`WORKFLOW_IO_MODE`: `replay` (the default) reads recorded fixtures and never
+touches the network, `record` calls live and saves the response, and `live`
+calls without saving. The default is `replay` so tests and local development
+can never spend money by accident.
+
+`app.py` sets the mode to `live` for exactly this reason: a deployed Space has
+no fixtures, and inheriting the replay default would make every call fail with
+`FixtureMissing` — quietly, since the failure is caught and reported as an
+ordinary error result.
+
 ## Credits
 
 Meaning comes from the `/interpret_sanskrit_verse` endpoint of

@@ -5,6 +5,14 @@ Record fixtures:  WORKFLOW_IO_MODE=record python app.py
 """
 from __future__ import annotations
 
+import os
+
+# A deployed Space is the live context. The record/replay layer defaults to
+# "replay" so development and tests never spend money, but that same default
+# would make ASR return an empty transcription here, silently. setdefault, not
+# a plain assignment, so an operator can still force "record".
+os.environ.setdefault("WORKFLOW_IO_MODE", "live")
+
 import gradio as gr
 
 from nodes.chandas import chandas_detect

@@ -90,3 +90,38 @@ def test_metre_only_component_touches_no_space_or_model(graph):
         if n["id"] in upstream
     }
     assert kinds <= {"fn"}, f"cheap endpoint must be fn-only, got {kinds}"
+
+
+def test_app_declares_live_mode_for_the_deployed_space():
+    """The record/replay layer defaults to replay to protect the budget; a
+    deployed Space must override that or every call fails FixtureMissing."""
+    import os
+    import importlib
+
+    saved = os.environ.pop("WORKFLOW_IO_MODE", None)
+    try:
+        import app
+
+        importlib.reload(app)
+        assert os.environ.get("WORKFLOW_IO_MODE") == "live"
+    finally:
+        os.environ.pop("WORKFLOW_IO_MODE", None)
+        if saved is not None:
+            os.environ["WORKFLOW_IO_MODE"] = saved
+
+
+def test_app_does_not_override_an_explicit_mode():
+    import os
+    import importlib
+
+    saved = os.environ.get("WORKFLOW_IO_MODE")
+    os.environ["WORKFLOW_IO_MODE"] = "record"
+    try:
+        import app
+
+        importlib.reload(app)
+        assert os.environ["WORKFLOW_IO_MODE"] == "record"
+    finally:
+        os.environ.pop("WORKFLOW_IO_MODE", None)
+        if saved is not None:
+            os.environ["WORKFLOW_IO_MODE"] = saved

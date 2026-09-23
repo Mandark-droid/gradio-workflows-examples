@@ -78,3 +78,38 @@ def test_row_idx_and_hf_token_are_the_only_endpoint_parameters(graph):
     wg = WorkflowGraph(graph)
     frees = group_free_inputs(wg, subject_groups(wg)[0])
     assert [f["node"]["id"] for f in frees] == ["ref_row_idx", "ref_hf_token"]
+
+
+def test_app_declares_live_mode_for_the_deployed_space():
+    """The record/replay layer defaults to replay to protect the budget; a
+    deployed Space must override that or every call fails FixtureMissing."""
+    import os
+    import importlib
+
+    saved = os.environ.pop("ARENA_IO_MODE", None)
+    try:
+        import app
+
+        importlib.reload(app)
+        assert os.environ.get("ARENA_IO_MODE") == "live"
+    finally:
+        os.environ.pop("ARENA_IO_MODE", None)
+        if saved is not None:
+            os.environ["ARENA_IO_MODE"] = saved
+
+
+def test_app_does_not_override_an_explicit_mode():
+    import os
+    import importlib
+
+    saved = os.environ.get("ARENA_IO_MODE")
+    os.environ["ARENA_IO_MODE"] = "record"
+    try:
+        import app
+
+        importlib.reload(app)
+        assert os.environ["ARENA_IO_MODE"] == "record"
+    finally:
+        os.environ.pop("ARENA_IO_MODE", None)
+        if saved is not None:
+            os.environ["ARENA_IO_MODE"] = saved

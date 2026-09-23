@@ -5,6 +5,14 @@ Record fixtures:  ARENA_IO_MODE=record python app.py
 """
 from __future__ import annotations
 
+import os
+
+# A deployed Space is the live context. The record/replay layer defaults to
+# "replay" so development and tests never spend money, but that same default
+# would make every call here fail with FixtureMissing. setdefault, not a plain
+# assignment, so an operator can still force "record" when capturing fixtures.
+os.environ.setdefault("ARENA_IO_MODE", "live")
+
 import gradio as gr
 
 from nodes.aggregate import aggregate
