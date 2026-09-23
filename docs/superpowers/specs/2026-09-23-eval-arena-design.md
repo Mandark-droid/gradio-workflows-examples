@@ -154,20 +154,29 @@ a model:
 | Node | Kind | Inputs | Outputs | Notes |
 | --- | --- | --- | --- | --- |
 | `row_idx` | reference | — | number | Driver sets it per call |
-| `eval_row` | dataset | row index | text (JSON row) | Public eval dataset; columns `id, task_type, prompt, gold, meta` |
-| `prompt_builder` | fn | row JSON | text | One shared template per `task_type`; chat-template application happens inside each candidate |
+| `eval_row` | dataset | `row_index` | one text port per column | Public eval dataset; five ports labelled `id`, `task_type`, `prompt`, `gold`, `meta` — see the note below |
+| `prompt_builder` | fn | task_type, prompt | text | One shared template per `task_type`; chat-template application happens inside each candidate |
 | `candidate_a` | fn | prompt | text (envelope) | Reads slot `a` from `candidates.yaml` |
 | `candidate_b` | fn | prompt | text (envelope) | Reads slot `b` |
 | `candidate_c` | fn | prompt | text (envelope) | Reads slot `c` |
-| `gold_extract` | fn | row JSON | text | Normalized gold answer plus answer type |
+| `gold_extract` | fn | gold, task_type | text | Normalized gold answer plus answer type |
 | `deterministic_scorer` | fn | 3 envelopes + gold | text (JSON) | Per-model: exact match, numeric tolerance, JSON validity, regex extraction |
-| `pairwise_judge` | fn | 3 envelopes + row | text (JSON) | 6 concurrent judge calls; see [Scoring design](#scoring-design) |
+| `pairwise_judge` | fn | 3 envelopes + prompt | text (JSON) | 6 concurrent judge calls; see [Scoring design](#scoring-design) |
 | `aggregate` | fn | scorer + judge JSON | 3 outputs | Feeds `Scores`, `Latency`, `Verdict` |
 
 `aggregate` has three output ports, which exceeds what signature inference
 generates. The guide covers this: *"For media ports or multiple outputs, define
 the function node's ports explicitly in the workflow JSON."* `workflow.json` is
 hand-authored, so the ports are declared there.
+
+**The `dataset` operator emits one port per column, not a JSON row.** Read from
+`gradio/workflow_api.py:_run_dataset`, which does `row.get(port["label"])`: each
+output port's **label** must exactly equal a dataset column name, and the input
+port's **id** must be `row_index`. So `eval_row` declares five text output ports
+labelled `id`, `task_type`, `prompt`, `gold` and `meta`, and the downstream fn
+nodes take those columns directly rather than parsing a row blob. This is
+simpler than the JSON-row shape first assumed, and it is verified in code rather
+than inferred from the guide.
 
 ## Candidate configuration
 
