@@ -12,9 +12,17 @@ Hugging Face Space.
   and illustration out. A second, cheap text-only endpoint exposes just the
   metre detector. See that directory's own README for the full mechanism and
   its Space card.
-- **`examples/eval-arena/`** — *in progress.* Planned as a Space that runs a
-  row of data through several candidate models and scores them, exposed as a
-  REST endpoint. Not yet built in this repo.
+- **`examples/eval-arena/`** — a hot-swappable model eval arena. A dataset
+  row runs through three candidate models in parallel, scored by a
+  deterministic scorer plus a position-controlled pairwise judge, all
+  exposed as one REST endpoint, `/scores`. Graph, batch driver, checkpointed
+  resume, run analysis and results publisher are all built; the bundled
+  public dataset is the 5-row
+  [`kshitijthakkar/gradio-workflow-eval-arena`](https://hf.co/datasets/kshitijthakkar/gradio-workflow-eval-arena),
+  which exists to exercise every scoring path rather than to rank models. The
+  Space card and deploy path are ready, but this example is not yet deployed
+  as a public Space. See that directory's own README for the full mechanism,
+  the swap procedure and its Space card.
 
 Each example directory **is** its Space root: the app, the workflow graph,
 requirements and Space card all live directly under it, so deployment is a
@@ -52,3 +60,21 @@ machine-rewritten graph never ships in place of the hand-authored one. Add
 Credentials come from `HF_TOKEN` if it's set in the environment, otherwise
 whatever `huggingface_hub` already has stored locally (e.g. from
 `huggingface-cli login`) — never a default, and never printed.
+
+## Running the eval arena driver
+
+Once `examples/eval-arena` is deployed as a Space, drive it from that
+directory:
+
+    cd examples/eval-arena
+    ../../.venv/Scripts/python.exe driver/run_batch.py --space owner/name --rows 5 --max-calls 60
+    ../../.venv/Scripts/python.exe driver/analyse.py --checkpoint runs/<file>.ckpt.jsonl
+    ../../.venv/Scripts/python.exe dataset/push_results.py --checkpoint runs/<file>.ckpt.jsonl --repo owner/eval-arena-runs
+
+`run_batch.py` checkpoints every row as it completes and refuses to spend
+past `--max-calls`; re-running the same command with the same
+`--checkpoint` does nothing once every row is done. `analyse.py` reports mean
+score, bootstrap CI, Bradley-Terry ratings and latency percentiles, and
+flags them as not statistically meaningful at the bundled dataset's 5 rows.
+`push_results.py` publishes the scored records to a public Hub dataset,
+tagged with the workflow and candidate config hashes that produced them.
