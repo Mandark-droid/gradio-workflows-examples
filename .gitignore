@@ -31,3 +31,6 @@ recordings/
 .secretscan-deny
 docs/
 /docs/
+
+# Controller scratch: plan ledgers and task reports. Never part of the repo.
+.superpowers/
