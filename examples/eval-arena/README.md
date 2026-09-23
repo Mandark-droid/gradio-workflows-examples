@@ -114,3 +114,10 @@ can never spend money by accident.
 no fixtures, and inheriting the replay default would make every call fail with
 `FixtureMissing` — quietly, since the failure is caught and reported as an
 ordinary error result.
+
+`tests/fixtures/` is committed, so a fresh clone can replay without a token or
+a live call. It covers exactly dataset row 0 — the three candidates plus the
+judge's pairwise verdicts for that row, 4 files. Every other row, and any run
+with a swapped candidate or judge, still needs `ARENA_IO_MODE=record` (or
+`live`) with a Hugging Face token. See `tests/fixtures/README.md` for exactly
+what is and is not covered, and the command to record more.

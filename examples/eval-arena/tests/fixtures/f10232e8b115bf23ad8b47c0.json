@@ -1,0 +1,6 @@
+{
+  "text": "{\"winner\":\"tie\",\"confidence\":0.99,\"rationale\":\"Both answers correctly state the capital city of Japan, Tokyo, with identical formatting and no errors. Therefore, neither answer is superior; they tie.\"}",
+  "latency_ms": 726,
+  "tokens_out": 96,
+  "reasoning_chars": 166
+}

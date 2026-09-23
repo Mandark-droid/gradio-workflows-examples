@@ -1,0 +1,74 @@
+{
+  "value": [
+    "*   **धर्मक्षेत्रे (Dharmakṣetre)**: In the field of Dharma (righteousness, duty, moral law).\n*   **कुरुक्षेत्रे (Kurukṣetre)**: In the field of Kuru (the spiritual realm of the father).\n*   **समवेता (Samavetāḥ)**: The one who is completely absorbed or absorbed.\n*   **युयुत्सवः (Yuyutsavaḥ)**: The one who is born of Yuyutsu (the mother of the Pandavas).\n*   **युयुत्सवः (Yuyutsavaḥ)**: The one who is born of Yuyutsu.\n*   **यजीत् (Yajīt)**: He should perform/perform.\n*   **सवः (Savaḥ)**: The Sava (the sacred syllable 'S' to be).\n*   **सविद्धि (Saviddhi)**: With a pure/complete",
+    [],
+    "Enable **Uncertainty heatmap** in Decoding to inspect generated-token confidence.",
+    {
+      "headers": [
+        "Pada",
+        "Gloss"
+      ],
+      "data": [
+        [
+          "धर्मक्षेत्रे (Dharmakṣetre)",
+          "In the field of Dharma (righteousness, duty, moral law)."
+        ],
+        [
+          "कुरुक्षेत्रे (Kurukṣetre)",
+          "In the field of Kuru (the spiritual realm of the father)."
+        ],
+        [
+          "समवेता (Samavetāḥ)",
+          "The one who is completely absorbed or absorbed."
+        ],
+        [
+          "युयुत्सवः (Yuyutsavaḥ)",
+          "The one who is born of Yuyutsu (the mother of the Pandavas)."
+        ],
+        [
+          "युयुत्सवः (Yuyutsavaḥ)",
+          "The one who is born of Yuyutsu."
+        ],
+        [
+          "यजीत् (Yajīt)",
+          "He should perform/perform."
+        ],
+        [
+          "सवः (Savaḥ)",
+          "The Sava (the sacred syllable 'S' to be)."
+        ],
+        [
+          "सविद्धि (Saviddhi)",
+          "With a pure/complete"
+        ]
+      ],
+      "metadata": null
+    },
+    "Section not detected; see Full commentary.",
+    "Section not detected; see Full commentary.",
+    "### 1. Word-by-Word Translation\n\n*   **धर्मक्षेत्रे (Dharmakṣetre)**: In the field of Dharma (righteousness, duty, moral law).\n*   **कुरुक्षेत्रे (Kurukṣetre)**: In the field of Kuru (the spiritual realm of the father).\n*   **समवेता (Samavetāḥ)**: The one who is completely absorbed or absorbed.\n*   **युयुत्सवः (Yuyutsavaḥ)**: The one who is born of Yuyutsu (the mother of the Pandavas).\n*   **युयुत्सवः (Yuyutsavaḥ)**: The one who is born of Yuyutsu.\n*   **यजीत् (Yajīt)**: He should perform/perform.\n*   **सवः (Savaḥ)**: The Sava (the sacred syllable 'S' to be).\n*   **सविद्धि (Saviddhi)**: With a pure/complete",
+    "Load a sample verse to enable automatic reference comparison.",
+    "No matching dataset reference is loaded for this edited verse. Click **Load a sample verse** to compare against an exact dataset row.",
+    {
+      "headers": [
+        "UTC",
+        "Source",
+        "Verse",
+        "Temperature",
+        "Top-p",
+        "Lexical F1"
+      ],
+      "data": [
+        [
+          "2026-09-23 15:40 UTC",
+          "bhagavad_gita",
+          "धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः",
+          0.7,
+          0.95,
+          "n/a"
+        ]
+      ],
+      "metadata": null
+    }
+  ]
+}
