@@ -204,9 +204,13 @@ than a size contest, and `Qwen/Qwen3-8B` is the one the spec names explicitly.
 The judge is a fourth family at a larger size, satisfying the
 out-of-family requirement against every candidate.
 
-Revisions are not hand-written. `scripts/pin_revisions.py` resolves each id to
-its current commit sha and writes it back into `candidates.yaml` at M1, so the
-pinning is reproducible and auditable rather than a manual transcription.
+Inference Providers expose no way to request a specific model revision —
+`InferenceClient` takes no revision argument, on init or on `chat_completion`
+— so `candidates.yaml` carries no `revision` field, and none should be added.
+`scripts/pin_revisions.py` instead resolves each id to the commit sha the Hub
+currently reports and writes it to `examples/eval-arena/model_provenance.json`
+— after-the-fact provenance for noticing a model changed, not a pin, and never
+written back into `candidates.yaml`.
 
 Swapping a candidate is a one-line YAML edit with **zero changes to the graph,
 the scorer, the judge or aggregate** — which satisfies the M5 exit criterion
@@ -347,9 +351,15 @@ Three measures address that:
   environment with no default and never logged.
 - **Author edits** happen via the private write-access URL only. That URL is
   never committed.
-- **Reproducibility.** Pin the Gradio version, model revisions as commit
-  hashes, and decode parameters in `candidates.yaml`. The `workflow.json` hash
-  in every result record ties results to the exact graph version.
+- **Reproducibility.** Pin the Gradio version and decode parameters in
+  `candidates.yaml`. Model revisions cannot be pinned: Inference Providers
+  expose no way to request a specific revision, so the provider serves
+  whatever weights it currently holds for a model id. `candidate_config_hash`
+  therefore covers model ids and decode parameters only, not weights.
+  `scripts/pin_revisions.py` records the sha each model id currently resolves
+  to in `model_provenance.json`, as provenance for noticing a change after the
+  fact, not as a pin. The `workflow.json` hash in every result record ties
+  results to the exact graph version.
 
 ## REST API contract
 

@@ -87,3 +87,14 @@ def test_caller_token_is_never_written_to_a_fixture(tmp_path):
     arena_io.chat("m", "p", 8, True, "hf_secretvalue123")
     blob = (arena_io.FIXTURE_DIR / f"{key}.json").read_text(encoding="utf-8")
     assert "hf_secretvalue123" not in blob
+
+
+def test_no_candidate_or_judge_entry_carries_a_revision_key():
+    # Inference Providers expose no way to request a specific model revision
+    # (InferenceClient takes no revision argument, on init or on
+    # chat_completion), so a `revision` field here would imply a weight pin
+    # that cannot exist. Guards against it being re-added.
+    cfg = arena_io.load_candidates()
+    entries = list(cfg["candidates"]) + [cfg["judge"]]
+    for entry in entries:
+        assert "revision" not in entry
