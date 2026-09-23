@@ -95,3 +95,18 @@ def normalize(source_json: str) -> str:
         },
         ensure_ascii=False,
     )
+
+
+def verse_text(normalized_json: str) -> str:
+    """Extract the bare Devanagari verse from normalize's JSON payload.
+
+    The Ślōkārtha Space expects a verse string. Handing it the whole
+    normalized object would ask the model to interpret JSON.
+    """
+    try:
+        payload = json.loads(normalized_json)
+        if isinstance(payload, dict):
+            return str(payload.get("devanagari") or payload.get("iast") or "")
+    except (json.JSONDecodeError, TypeError):
+        pass
+    return str(normalized_json or "")

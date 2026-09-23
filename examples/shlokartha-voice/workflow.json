@@ -62,11 +62,39 @@
       "data": {}, "x": 1080, "y": 180
     },
     {
+      "id": "op_verse_text", "label": "Verse Text", "role": "operator", "kind": "fn", "fn": "verse_text",
+      "inputs": [{"id": "normalized_json", "label": "Normalized JSON", "type": "text", "required": true}],
+      "outputs": [{"id": "out_0", "label": "Verse", "type": "text", "output_index": 0}],
+      "data": {}, "x": 900, "y": 340
+    },
+    {
       "id": "op_meaning", "label": "Slokartha Commentary", "role": "operator", "kind": "space",
-      "space_id": "kshitijthakkar/shlokartha-playground", "endpoint": "/sanskrit_commentator",
-      "inputs": [{"id": "shloka", "label": "Shloka", "type": "text", "required": true}],
-      "outputs": [{"id": "out_0", "label": "Commentary", "type": "text", "output_index": 0}],
-      "data": {}, "x": 1080, "y": 340
+      "space_id": "kshitijthakkar/shlokartha-playground", "endpoint": "/interpret_sanskrit_verse",
+      "inputs": [
+        {"id": "system_prompt", "label": "System Prompt", "type": "text", "required": false},
+        {"id": "source", "label": "Source", "type": "text", "required": false},
+        {"id": "shloka", "label": "Shloka", "type": "text", "required": true},
+        {"id": "max_new_tokens", "label": "Max New Tokens", "type": "number", "required": false},
+        {"id": "temperature", "label": "Temperature", "type": "number", "required": false},
+        {"id": "top_p", "label": "Top P", "type": "number", "required": false},
+        {"id": "repetition_penalty", "label": "Repetition Penalty", "type": "number", "required": false},
+        {"id": "do_sample", "label": "Do Sample", "type": "boolean", "required": false},
+        {"id": "seed", "label": "Seed", "type": "number", "required": false},
+        {"id": "show_uncertainty", "label": "Show Uncertainty", "type": "boolean", "required": false}
+      ],
+      "outputs": [{"id": "out_6", "label": "Commentary", "type": "text", "output_index": 6}],
+      "data": {
+        "system_prompt": "You are a careful Sanskrit commentator. Separate literal meaning, grammar, translation, and cultural context. Do not invent textual details.",
+        "source": "bhagavad_gita",
+        "max_new_tokens": 256,
+        "temperature": 0.7,
+        "top_p": 0.95,
+        "repetition_penalty": 1.1,
+        "do_sample": false,
+        "seed": 42,
+        "show_uncertainty": false
+      },
+      "x": 1080, "y": 340
     },
     {
       "id": "op_tts", "label": "Narration TTS", "role": "operator", "kind": "space",
@@ -157,19 +185,20 @@
     {"id": "e04", "from_node_id": "op_select", "from_port_id": "out_0", "to_node_id": "op_normalize", "to_port_id": "source_json", "type": "text"},
     {"id": "e05", "from_node_id": "op_normalize", "from_port_id": "out_0", "to_node_id": "op_sandhi", "to_port_id": "normalized_json", "type": "text"},
     {"id": "e06", "from_node_id": "op_normalize", "from_port_id": "out_0", "to_node_id": "op_chandas", "to_port_id": "normalized_json", "type": "text"},
-    {"id": "e07", "from_node_id": "op_normalize", "from_port_id": "out_0", "to_node_id": "op_meaning", "to_port_id": "shloka", "type": "text"},
+    {"id": "e07", "from_node_id": "op_normalize", "from_port_id": "out_0", "to_node_id": "op_verse_text", "to_port_id": "normalized_json", "type": "text"},
     {"id": "e08", "from_node_id": "op_normalize", "from_port_id": "out_0", "to_node_id": "sub_verse", "to_port_id": "in", "type": "text"},
     {"id": "e09", "from_node_id": "op_sandhi", "from_port_id": "out_0", "to_node_id": "sub_padaccheda", "to_port_id": "in", "type": "text"},
     {"id": "e10", "from_node_id": "op_chandas", "from_port_id": "out_0", "to_node_id": "sub_metre", "to_port_id": "in", "type": "text"},
-    {"id": "e11", "from_node_id": "op_meaning", "from_port_id": "out_0", "to_node_id": "sub_meaning", "to_port_id": "in", "type": "text"},
-    {"id": "e12", "from_node_id": "op_meaning", "from_port_id": "out_0", "to_node_id": "op_tts", "to_port_id": "text", "type": "text"},
+    {"id": "e11", "from_node_id": "op_meaning", "from_port_id": "out_6", "to_node_id": "sub_meaning", "to_port_id": "in", "type": "text"},
+    {"id": "e12", "from_node_id": "op_meaning", "from_port_id": "out_6", "to_node_id": "op_tts", "to_port_id": "text", "type": "text"},
     {"id": "e13", "from_node_id": "ref_voice", "from_port_id": "out", "to_node_id": "op_tts", "to_port_id": "voice", "type": "text"},
     {"id": "e14", "from_node_id": "op_tts", "from_port_id": "out_0", "to_node_id": "sub_narration", "to_port_id": "in", "type": "audio"},
-    {"id": "e15", "from_node_id": "op_meaning", "from_port_id": "out_0", "to_node_id": "op_illus_prompt", "to_port_id": "meaning", "type": "text"},
+    {"id": "e15", "from_node_id": "op_meaning", "from_port_id": "out_6", "to_node_id": "op_illus_prompt", "to_port_id": "meaning", "type": "text"},
     {"id": "e16", "from_node_id": "op_illus_prompt", "from_port_id": "out_0", "to_node_id": "op_flux", "to_port_id": "prompt", "type": "text"},
     {"id": "e17", "from_node_id": "op_flux", "from_port_id": "out_0", "to_node_id": "sub_illustration", "to_port_id": "in", "type": "image"},
     {"id": "e18", "from_node_id": "ref_text_b", "from_port_id": "out", "to_node_id": "op_normalize_b", "to_port_id": "source_json", "type": "text"},
     {"id": "e19", "from_node_id": "op_normalize_b", "from_port_id": "out_0", "to_node_id": "op_chandas_b", "to_port_id": "normalized_json", "type": "text"},
-    {"id": "e20", "from_node_id": "op_chandas_b", "from_port_id": "out_0", "to_node_id": "sub_metre_only", "to_port_id": "in", "type": "text"}
+    {"id": "e20", "from_node_id": "op_chandas_b", "from_port_id": "out_0", "to_node_id": "sub_metre_only", "to_port_id": "in", "type": "text"},
+    {"id": "e21", "from_node_id": "op_verse_text", "from_port_id": "out_0", "to_node_id": "op_meaning", "to_port_id": "shloka", "type": "text"}
   ]
 }

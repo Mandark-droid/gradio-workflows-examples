@@ -10,7 +10,7 @@ import gradio as gr
 from nodes.chandas import chandas_detect
 from nodes.hf_io import _utf8_stdout
 from nodes.illustration import illustration_prompt
-from nodes.normalize import normalize
+from nodes.normalize import normalize, verse_text
 from nodes.sandhi import sandhi_split
 from nodes.source import asr, select_source
 
@@ -20,6 +20,7 @@ BINDINGS = {
     "asr": asr,
     "select_source": select_source,
     "normalize": normalize,
+    "verse_text": verse_text,
     "sandhi_split": sandhi_split,
     "chandas_detect": chandas_detect,
     "illustration_prompt": illustration_prompt,

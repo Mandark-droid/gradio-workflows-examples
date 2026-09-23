@@ -7,14 +7,16 @@ asr:
 
 shlokartha:
   space_id: kshitijthakkar/shlokartha-playground
-  api_name: /sanskrit_commentator
-  # Used only by the offline meaning A/B, never by the graph.
-  interpret_api_name: /interpret_sanskrit_verse
+  # The generator. /sanskrit_commentator only returns a prompt template.
+  api_name: /interpret_sanskrit_verse
+  prompt_only_api_name: /sanskrit_commentator
+  source: bhagavad_gita          # valid enum: mahabharata, ramayana, bhagavad_gita, upanishads, puranas, subhashitas
+  meaning_output_index: 6        # index 6 is the full commentary; index 0 is pada-artha only
 
 tts:
   space_id: innoai/Edge-TTS-Text-to-Speech
   api_name: /tts_interface
-  default_voice: hi-IN-MadhurNeural
+  default_voice: "hi-IN-MadhurNeural - hi-IN (Male)"
   rate: 0
   pitch: 0
 

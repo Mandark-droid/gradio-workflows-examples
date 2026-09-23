@@ -57,3 +57,17 @@ def test_fallback_balances_syllables_not_word_count():
 
 def test_double_danda_is_not_treated_as_two_empty_padas():
     assert "" not in split_padas("alpha ॥ beta")
+
+
+def test_verse_text_extracts_devanagari():
+    from nodes.normalize import verse_text
+
+    payload = json.dumps({"devanagari": "धर्मक्षेत्रे", "iast": "dharmakṣetre"})
+    assert verse_text(payload) == "धर्मक्षेत्रे"
+
+
+def test_verse_text_falls_back_to_iast_then_raw():
+    from nodes.normalize import verse_text
+
+    assert verse_text(json.dumps({"iast": "rāma"})) == "rāma"
+    assert verse_text("not json") == "not json"
