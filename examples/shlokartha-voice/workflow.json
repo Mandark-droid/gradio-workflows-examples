@@ -1,0 +1,175 @@
+{
+  "schema_version": "2",
+  "name": "Slokartha Voice Pipeline",
+  "references": [
+    {
+      "id": "ref_audio", "label": "Audio", "role": "reference", "asset_type": "audio",
+      "inputs": [{"id": "in", "label": "Audio", "type": "audio"}],
+      "outputs": [{"id": "out", "label": "Audio", "type": "audio"}],
+      "data": {}, "x": 40, "y": 40
+    },
+    {
+      "id": "ref_text", "label": "Text", "role": "reference", "asset_type": "text",
+      "inputs": [{"id": "in", "label": "Text", "type": "text"}],
+      "outputs": [{"id": "out", "label": "Text", "type": "text"}],
+      "data": {}, "x": 40, "y": 220
+    },
+    {
+      "id": "ref_voice", "label": "Voice", "role": "reference", "asset_type": "text",
+      "inputs": [{"id": "in", "label": "Text", "type": "text"}],
+      "outputs": [{"id": "out", "label": "Text", "type": "text"}],
+      "data": {"out": "hi-IN-MadhurNeural"}, "x": 40, "y": 400
+    },
+    {
+      "id": "ref_text_b", "label": "Verse Text", "role": "reference", "asset_type": "text",
+      "inputs": [{"id": "in", "label": "Text", "type": "text"}],
+      "outputs": [{"id": "out", "label": "Text", "type": "text"}],
+      "data": {}, "x": 40, "y": 700
+    }
+  ],
+  "operators": [
+    {
+      "id": "op_asr", "label": "ASR", "role": "operator", "kind": "fn", "fn": "asr",
+      "inputs": [{"id": "audio_path", "label": "Audio", "type": "audio", "required": false}],
+      "outputs": [{"id": "out_0", "label": "Text", "type": "text", "output_index": 0}],
+      "data": {}, "x": 300, "y": 40
+    },
+    {
+      "id": "op_select", "label": "Select Source", "role": "operator", "kind": "fn", "fn": "select_source",
+      "inputs": [
+        {"id": "asr_text", "label": "ASR Text", "type": "text", "required": false},
+        {"id": "typed_text", "label": "Typed Text", "type": "text", "required": false}
+      ],
+      "outputs": [{"id": "out_0", "label": "Source JSON", "type": "text", "output_index": 0}],
+      "data": {}, "x": 560, "y": 130
+    },
+    {
+      "id": "op_normalize", "label": "Normalize", "role": "operator", "kind": "fn", "fn": "normalize",
+      "inputs": [{"id": "source_json", "label": "Source JSON", "type": "text", "required": true}],
+      "outputs": [{"id": "out_0", "label": "Normalized JSON", "type": "text", "output_index": 0}],
+      "data": {}, "x": 820, "y": 130
+    },
+    {
+      "id": "op_sandhi", "label": "Sandhi Split", "role": "operator", "kind": "fn", "fn": "sandhi_split",
+      "inputs": [{"id": "normalized_json", "label": "Normalized JSON", "type": "text", "required": true}],
+      "outputs": [{"id": "out_0", "label": "Padaccheda JSON", "type": "text", "output_index": 0}],
+      "data": {}, "x": 1080, "y": 20
+    },
+    {
+      "id": "op_chandas", "label": "Chandas Detect", "role": "operator", "kind": "fn", "fn": "chandas_detect",
+      "inputs": [{"id": "normalized_json", "label": "Normalized JSON", "type": "text", "required": true}],
+      "outputs": [{"id": "out_0", "label": "Metre JSON", "type": "text", "output_index": 0}],
+      "data": {}, "x": 1080, "y": 180
+    },
+    {
+      "id": "op_meaning", "label": "Slokartha Commentary", "role": "operator", "kind": "space",
+      "space_id": "kshitijthakkar/shlokartha-playground", "endpoint": "/sanskrit_commentator",
+      "inputs": [{"id": "shloka", "label": "Shloka", "type": "text", "required": true}],
+      "outputs": [{"id": "out_0", "label": "Commentary", "type": "text", "output_index": 0}],
+      "data": {}, "x": 1080, "y": 340
+    },
+    {
+      "id": "op_tts", "label": "Narration TTS", "role": "operator", "kind": "space",
+      "space_id": "innoai/Edge-TTS-Text-to-Speech", "endpoint": "/tts_interface",
+      "inputs": [
+        {"id": "text", "label": "Text", "type": "text", "required": true},
+        {"id": "voice", "label": "Voice", "type": "text", "required": false},
+        {"id": "rate", "label": "Rate", "type": "number", "required": false},
+        {"id": "pitch", "label": "Pitch", "type": "number", "required": false}
+      ],
+      "outputs": [{"id": "out_0", "label": "Audio", "type": "audio", "output_index": 0}],
+      "data": {}, "x": 1360, "y": 300
+    },
+    {
+      "id": "op_illus_prompt", "label": "Illustration Prompt", "role": "operator", "kind": "fn", "fn": "illustration_prompt",
+      "inputs": [{"id": "meaning", "label": "Meaning", "type": "text", "required": true}],
+      "outputs": [{"id": "out_0", "label": "Prompt", "type": "text", "output_index": 0}],
+      "data": {}, "x": 1360, "y": 460
+    },
+    {
+      "id": "op_flux", "label": "FLUX.1-schnell", "role": "operator", "kind": "model",
+      "model_id": "black-forest-labs/FLUX.1-schnell", "pipeline_tag": "text-to-image", "endpoint": "text_to_image",
+      "inputs": [{"id": "prompt", "label": "Prompt", "type": "text", "required": true}],
+      "outputs": [{"id": "out_0", "label": "Image", "type": "image", "output_index": 0}],
+      "data": {}, "x": 1620, "y": 460
+    },
+    {
+      "id": "op_normalize_b", "label": "Normalize (text only)", "role": "operator", "kind": "fn", "fn": "normalize",
+      "inputs": [{"id": "source_json", "label": "Source JSON", "type": "text", "required": true}],
+      "outputs": [{"id": "out_0", "label": "Normalized JSON", "type": "text", "output_index": 0}],
+      "data": {}, "x": 300, "y": 700
+    },
+    {
+      "id": "op_chandas_b", "label": "Chandas Detect (text only)", "role": "operator", "kind": "fn", "fn": "chandas_detect",
+      "inputs": [{"id": "normalized_json", "label": "Normalized JSON", "type": "text", "required": true}],
+      "outputs": [{"id": "out_0", "label": "Metre JSON", "type": "text", "output_index": 0}],
+      "data": {}, "x": 560, "y": 700
+    }
+  ],
+  "subjects": [
+    {
+      "id": "sub_verse", "label": "Verse", "role": "subject", "asset_type": "text",
+      "inputs": [{"id": "in", "label": "Text", "type": "text"}],
+      "outputs": [{"id": "out", "label": "Text", "type": "text"}],
+      "data": {}, "x": 1360, "y": 20
+    },
+    {
+      "id": "sub_padaccheda", "label": "Padaccheda", "role": "subject", "asset_type": "text",
+      "inputs": [{"id": "in", "label": "Text", "type": "text"}],
+      "outputs": [{"id": "out", "label": "Text", "type": "text"}],
+      "data": {}, "x": 1360, "y": 120
+    },
+    {
+      "id": "sub_metre", "label": "Metre", "role": "subject", "asset_type": "text",
+      "inputs": [{"id": "in", "label": "Text", "type": "text"}],
+      "outputs": [{"id": "out", "label": "Text", "type": "text"}],
+      "data": {}, "x": 1360, "y": 200
+    },
+    {
+      "id": "sub_meaning", "label": "Meaning", "role": "subject", "asset_type": "text",
+      "inputs": [{"id": "in", "label": "Text", "type": "text"}],
+      "outputs": [{"id": "out", "label": "Text", "type": "text"}],
+      "data": {}, "x": 1620, "y": 200
+    },
+    {
+      "id": "sub_narration", "label": "Narration", "role": "subject", "asset_type": "audio",
+      "inputs": [{"id": "in", "label": "Audio", "type": "audio"}],
+      "outputs": [{"id": "out", "label": "Audio", "type": "audio"}],
+      "data": {}, "x": 1620, "y": 300
+    },
+    {
+      "id": "sub_illustration", "label": "Illustration", "role": "subject", "asset_type": "image",
+      "inputs": [{"id": "in", "label": "Image", "type": "image"}],
+      "outputs": [{"id": "out", "label": "Image", "type": "image"}],
+      "data": {}, "x": 1880, "y": 460
+    },
+    {
+      "id": "sub_metre_only", "label": "Metre Only", "role": "subject", "asset_type": "text",
+      "inputs": [{"id": "in", "label": "Text", "type": "text"}],
+      "outputs": [{"id": "out", "label": "Text", "type": "text"}],
+      "data": {}, "x": 820, "y": 700
+    }
+  ],
+  "edges": [
+    {"id": "e01", "from_node_id": "ref_audio", "from_port_id": "out", "to_node_id": "op_asr", "to_port_id": "audio_path", "type": "audio"},
+    {"id": "e02", "from_node_id": "op_asr", "from_port_id": "out_0", "to_node_id": "op_select", "to_port_id": "asr_text", "type": "text"},
+    {"id": "e03", "from_node_id": "ref_text", "from_port_id": "out", "to_node_id": "op_select", "to_port_id": "typed_text", "type": "text"},
+    {"id": "e04", "from_node_id": "op_select", "from_port_id": "out_0", "to_node_id": "op_normalize", "to_port_id": "source_json", "type": "text"},
+    {"id": "e05", "from_node_id": "op_normalize", "from_port_id": "out_0", "to_node_id": "op_sandhi", "to_port_id": "normalized_json", "type": "text"},
+    {"id": "e06", "from_node_id": "op_normalize", "from_port_id": "out_0", "to_node_id": "op_chandas", "to_port_id": "normalized_json", "type": "text"},
+    {"id": "e07", "from_node_id": "op_normalize", "from_port_id": "out_0", "to_node_id": "op_meaning", "to_port_id": "shloka", "type": "text"},
+    {"id": "e08", "from_node_id": "op_normalize", "from_port_id": "out_0", "to_node_id": "sub_verse", "to_port_id": "in", "type": "text"},
+    {"id": "e09", "from_node_id": "op_sandhi", "from_port_id": "out_0", "to_node_id": "sub_padaccheda", "to_port_id": "in", "type": "text"},
+    {"id": "e10", "from_node_id": "op_chandas", "from_port_id": "out_0", "to_node_id": "sub_metre", "to_port_id": "in", "type": "text"},
+    {"id": "e11", "from_node_id": "op_meaning", "from_port_id": "out_0", "to_node_id": "sub_meaning", "to_port_id": "in", "type": "text"},
+    {"id": "e12", "from_node_id": "op_meaning", "from_port_id": "out_0", "to_node_id": "op_tts", "to_port_id": "text", "type": "text"},
+    {"id": "e13", "from_node_id": "ref_voice", "from_port_id": "out", "to_node_id": "op_tts", "to_port_id": "voice", "type": "text"},
+    {"id": "e14", "from_node_id": "op_tts", "from_port_id": "out_0", "to_node_id": "sub_narration", "to_port_id": "in", "type": "audio"},
+    {"id": "e15", "from_node_id": "op_meaning", "from_port_id": "out_0", "to_node_id": "op_illus_prompt", "to_port_id": "meaning", "type": "text"},
+    {"id": "e16", "from_node_id": "op_illus_prompt", "from_port_id": "out_0", "to_node_id": "op_flux", "to_port_id": "prompt", "type": "text"},
+    {"id": "e17", "from_node_id": "op_flux", "from_port_id": "out_0", "to_node_id": "sub_illustration", "to_port_id": "in", "type": "image"},
+    {"id": "e18", "from_node_id": "ref_text_b", "from_port_id": "out", "to_node_id": "op_normalize_b", "to_port_id": "source_json", "type": "text"},
+    {"id": "e19", "from_node_id": "op_normalize_b", "from_port_id": "out_0", "to_node_id": "op_chandas_b", "to_port_id": "normalized_json", "type": "text"},
+    {"id": "e20", "from_node_id": "op_chandas_b", "from_port_id": "out_0", "to_node_id": "sub_metre_only", "to_port_id": "in", "type": "text"}
+  ]
+}
