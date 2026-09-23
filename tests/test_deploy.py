@@ -31,6 +31,22 @@ def test_skip_dirs_covers_fixtures():
     assert "fixtures" in SKIP_DIRS
 
 
+def test_file_list_excludes_nested_eval_results(tmp_path):
+    # build_file_list checks path *parts* against SKIP_DIRS, unlike the old
+    # ignore_patterns=["results/*", ...] passed to upload_folder, which is
+    # fnmatched against the full relative path and never matches a nested
+    # "eval/results/x.json" — that file was previewed as excluded but
+    # uploaded anyway. This asserts the preview function itself is correct;
+    # deploy() now derives the upload allow-list from this same function.
+    (tmp_path / "eval").mkdir()
+    (tmp_path / "eval" / "metrics.py").write_text("x", encoding="utf-8")
+    (tmp_path / "eval" / "results").mkdir()
+    (tmp_path / "eval" / "results" / "x.json").write_text("{}", encoding="utf-8")
+    rel = {str(p.relative_to(tmp_path)).replace("\\", "/") for p in build_file_list(tmp_path)}
+    assert "eval/metrics.py" in rel
+    assert "eval/results/x.json" not in rel
+
+
 def test_deploy_requires_a_token(monkeypatch):
     from scripts import deploy
 

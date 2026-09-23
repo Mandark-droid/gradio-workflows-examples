@@ -111,11 +111,17 @@ def deploy(example: str, space_id: str, dry_run: bool) -> int:
     api = HfApi(token=token)
     print(f"authenticated as: {api.whoami().get('name')}")
     api.create_repo(space_id, repo_type="space", space_sdk="gradio", exist_ok=True)
+    # Upload exactly the files the dry run previewed. `ignore_patterns` used
+    # to be matched against the full relative path (fnmatch semantics), so a
+    # pattern like "results/*" never matched "eval/results/x.json" — that
+    # file was excluded from the preview above but uploaded anyway. Deriving
+    # the allow-list from build_file_list keeps upload and preview identical.
+    allow = [str(p.relative_to(example_dir)).replace("\\", "/") for p in files]
     api.upload_folder(
         folder_path=str(example_dir),
         repo_id=space_id,
         repo_type="space",
-        ignore_patterns=[f"{d}/*" for d in SKIP_DIRS] + ["*.pyc"],
+        allow_patterns=allow,
     )
     print(f"\nDeployed: https://hf.co/spaces/{space_id}")
     return 0

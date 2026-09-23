@@ -96,6 +96,44 @@ def test_judge_failure_does_not_crash_the_node(monkeypatch):
     assert all(pair["winner"] is None for pair in result["pairs"])
 
 
+def test_judge_failure_is_recorded_not_indistinguishable_from_a_real_tie(monkeypatch):
+    # A dead judge must not look like a judge that genuinely evaluated both
+    # orderings and disagreed — that would fabricate a plausible-looking
+    # bradley_terry table. Every pair must carry a non-null judge_error while
+    # still recording a tie (winner: None, agreed: False), since the
+    # downstream scorer must keep working without crashing.
+    def _boom(*a, **k):
+        raise RuntimeError("judge unreachable")
+
+    monkeypatch.setattr(arena_io, "chat", _boom)
+    result = json.loads(judge.pairwise_judge(_env("m1"), _env("m2"), _env("m3"), "p"))
+    assert len(result["pairs"]) == 3
+    for pair in result["pairs"]:
+        assert pair["winner"] is None
+        assert pair["agreed"] is False
+        assert pair["judge_error"], pair
+        assert "RuntimeError" in pair["judge_error"]
+
+
+def test_judge_error_is_none_on_a_successful_call(monkeypatch):
+    monkeypatch.setattr(arena_io, "chat",
+                        lambda *a, **k: ('{"winner":"A","confidence":0.9,"rationale":"x"}', 1, 1, 0))
+    result = json.loads(judge.pairwise_judge(_env("m1"), _env("m2"), _env("m3"), "p"))
+    assert all(pair["judge_error"] is None for pair in result["pairs"])
+
+
+def test_judge_error_never_includes_the_token(monkeypatch):
+    def _boom(*a, **k):
+        raise RuntimeError("auth failed for secret-token-abc123")
+
+    monkeypatch.setattr(arena_io, "chat", _boom)
+    result = json.loads(
+        judge.pairwise_judge(_env("m1"), _env("m2"), _env("m3"), "p", hf_token="secret-token-abc123")
+    )
+    for pair in result["pairs"]:
+        assert "secret-token-abc123" not in pair["judge_error"]
+
+
 def test_candidate_with_an_error_envelope_loses(monkeypatch):
     calls = []
     monkeypatch.setattr(

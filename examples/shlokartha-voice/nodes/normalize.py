@@ -33,33 +33,64 @@ def _syllable_count(text: str) -> int:
     return len(_VOWEL_RE.findall(text.lower()))
 
 
-def split_padas(text: str) -> list[str]:
-    """Split on daṇḍas; otherwise fall back to the most syllable-balanced
-    word boundary.
+# Syllable counts of the pādas this pipeline can recognise. A segment whose
+# count is not one of these is probably several pādas run together.
+PADA_LENGTHS = frozenset({8, 11, 12, 14, 15, 17, 19})
+_MAX_SPLIT_DEPTH = 2
 
-    ASR output carries no daṇḍas, so this fallback is the live path. Splitting
-    at the word midpoint misreports metre whenever the words are unevenly
-    sized, so the boundary that best balances syllable counts is chosen
-    instead.
-    """
-    parts = [p.strip() for p in DANDA_RE.split(text) if p.strip()]
-    if len(parts) > 1:
-        return parts
-    single = parts[0] if parts else ""
-    if not single:
-        return []
-    words = single.split()
+
+def _balanced_halves(text: str) -> tuple[str, str] | None:
+    """Split at the word boundary that most evenly balances syllables."""
+    words = text.split()
     if len(words) < 2:
-        return [single]
-
-    best_index, best_delta = 1, None
+        return None
+    best_index, best_delta = None, None
     for index in range(1, len(words)):
         left = _syllable_count(" ".join(words[:index]))
         right = _syllable_count(" ".join(words[index:]))
         delta = abs(left - right)
         if best_delta is None or delta < best_delta:
             best_index, best_delta = index, delta
-    return [" ".join(words[:best_index]), " ".join(words[best_index:])]
+    if best_index is None:
+        return None
+    return " ".join(words[:best_index]), " ".join(words[best_index:])
+
+
+def _split_to_padas(segment: str, depth: int = 0) -> list[str]:
+    """Halve a segment until each part is a plausible pāda.
+
+    A written verse puts a daṇḍa between half-lines, not between pādas, so one
+    daṇḍa segment of an Anuṣṭubh is 16 syllables — two pādas. Without this the
+    metre matcher never sees an 8-syllable pāda and reports Unknown for every
+    complete verse.
+    """
+    count = _syllable_count(segment)
+    if count in PADA_LENGTHS or depth >= _MAX_SPLIT_DEPTH:
+        return [segment]
+    if count >= 4 and count % 2 == 0:
+        halves = _balanced_halves(segment)
+        if halves and all(_syllable_count(h) for h in halves):
+            return (
+                _split_to_padas(halves[0], depth + 1)
+                + _split_to_padas(halves[1], depth + 1)
+            )
+    return [segment]
+
+
+def split_padas(text: str) -> list[str]:
+    """Split a verse into pādas.
+
+    Daṇḍas mark half-lines, so each segment is split further until its parts
+    are plausible pāda lengths. ASR output carries no daṇḍas at all, which is
+    why the fallback must do the same work.
+    """
+    segments = [p.strip() for p in DANDA_RE.split(text) if p.strip()]
+    if not segments:
+        return []
+    padas: list[str] = []
+    for segment in segments:
+        padas.extend(_split_to_padas(segment))
+    return [p for p in padas if p.strip()]
 
 
 def normalize(source_json: str) -> str:

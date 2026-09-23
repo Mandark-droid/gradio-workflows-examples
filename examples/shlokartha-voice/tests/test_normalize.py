@@ -47,11 +47,12 @@ def test_padas_fall_back_to_balanced_syllable_halves_without_dandas():
 
 
 def test_fallback_balances_syllables_not_word_count():
-    # "a" is one syllable, "bhārata" is three. A word-midpoint split would
-    # give 1 vs 6 syllables; balancing must not.
+    # 4 words, 6 syllables: "a", "a", "a" (1 each) then "bhārata" (3). The
+    # word-count midpoint (2 words each side) would give 2 vs 4 syllables;
+    # balancing must instead cut after the third word for an exact 3 vs 3.
     from nodes.normalize import _syllable_count
 
-    left, right = split_padas("a bhārata bhārata")
+    left, right = split_padas("a a a bhārata")
     assert abs(_syllable_count(left) - _syllable_count(right)) <= 1
 
 
@@ -71,3 +72,32 @@ def test_verse_text_falls_back_to_iast_then_raw():
 
     assert verse_text(json.dumps({"iast": "rāma"})) == "rāma"
     assert verse_text("not json") == "not json"
+
+
+FULL_VERSE_IAST = (
+    "dharmakṣetre kurukṣetre samavetā yuyutsavaḥ । "
+    "māmakāḥ pāṇḍavāścaiva kimakurvata sañjaya ॥"
+)
+
+
+def test_full_verse_with_dandas_yields_four_padas():
+    padas = split_padas(FULL_VERSE_IAST)
+    from nodes.normalize import _syllable_count
+
+    assert len(padas) == 4, padas
+    assert all(_syllable_count(p) == 8 for p in padas), [
+        _syllable_count(p) for p in padas
+    ]
+
+
+def test_full_verse_without_dandas_yields_four_padas():
+    from nodes.normalize import _syllable_count
+
+    padas = split_padas(FULL_VERSE_IAST.replace("।", " ").replace("॥", " "))
+    assert len(padas) == 4, padas
+    assert all(_syllable_count(p) == 8 for p in padas)
+
+
+def test_half_verse_still_yields_two_padas():
+    padas = split_padas("dharmakṣetre kurukṣetre samavetā yuyutsavaḥ")
+    assert len(padas) == 2

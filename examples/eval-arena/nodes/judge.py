@@ -79,9 +79,16 @@ def _ask(prompt_text: str, answer_a: str, answer_b: str, hf_token: str = "") -> 
         text, _, _, _ = arena_io.chat(
             cfg["model_id"], prompt, int(cfg["max_new_tokens"]), True, hf_token
         )
-    except Exception:
-        return {"winner": "TIE", "confidence": 0.0, "rationale": ""}
-    return _parse_verdict(text)
+    except Exception as exc:
+        message = f"{type(exc).__name__}: {exc}"
+        if hf_token:
+            # A visitor-supplied credential must never reach a result record,
+            # even indirectly through an HTTP client's error message.
+            message = message.replace(hf_token, "[redacted]")
+        return {"winner": "TIE", "confidence": 0.0, "rationale": "", "error": message}
+    verdict = _parse_verdict(text)
+    verdict["error"] = None
+    return verdict
 
 
 def _cap_words(text: str, cap: int) -> str:
@@ -135,6 +142,12 @@ def pairwise_judge(env_a: str, env_b: str, env_c: str, prompt: str, hf_token: st
         else:
             winner_index, agreed = None, False
 
+        # A None judge_error means both the forward and swapped calls
+        # succeeded; otherwise it is the first error seen, so a tie caused by
+        # an unreachable judge is never silently indistinguishable from a
+        # tie the judge actually reached.
+        judge_error = forward.get("error") or swapped.get("error")
+
         pairs.append({
             "a": envelopes[i]["model_id"],
             "b": envelopes[j]["model_id"],
@@ -144,6 +157,7 @@ def pairwise_judge(env_a: str, env_b: str, env_c: str, prompt: str, hf_token: st
                 (forward["confidence"] + swapped["confidence"]) / 2, 3
             ),
             "rationale": _cap_words(forward["rationale"], cap),
+            "judge_error": judge_error,
         })
 
     return json.dumps({"pairs": pairs}, ensure_ascii=False)

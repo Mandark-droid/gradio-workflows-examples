@@ -46,6 +46,15 @@
       "metre": "Anuṣṭubh",
       "gold_padaccheda": ["uddharet", "ātmanā", "ātmānam", "na", "ātmānam", "avasādayet"],
       "reference_translation": "Let one lift oneself by oneself; let one not degrade oneself."
+    },
+    {
+      "id": "bg-1.1-full",
+      "devanagari": "धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः। मामकाः पाण्डवाश्चैव किमकुर्वत सञ्जय॥",
+      "iast": "dharmakṣetre kurukṣetre samavetā yuyutsavaḥ । māmakāḥ pāṇḍavāścaiva kimakurvata sañjaya ॥",
+      "padas": ["dharmakṣetre kurukṣetre", "samavetā yuyutsavaḥ", "māmakāḥ pāṇḍavāścaiva", "kimakurvata sañjaya"],
+      "metre": "Anuṣṭubh",
+      "gold_padaccheda": ["dharmakṣetre", "kurukṣetre", "samavetāḥ", "yuyutsavaḥ", "māmakāḥ", "pāṇḍavāḥ", "ca", "eva", "kim", "akurvata", "sañjaya"],
+      "reference_translation": "On the field of dharma, the field of the Kurus, gathered together eager to fight, what did my people and the sons of Pandu do, Sanjaya?"
     }
   ]
 }

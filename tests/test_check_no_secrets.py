@@ -1,7 +1,7 @@
 # tests/test_check_no_secrets.py
 from pathlib import Path
 import pytest
-from scripts.check_no_secrets import scan_text, scan_repo, load_deny_terms
+from scripts.check_no_secrets import scan_text, scan_repo, load_deny_terms, main
 
 
 def test_flags_hf_token():
@@ -36,6 +36,31 @@ def test_reports_line_numbers():
 
 def test_missing_deny_file_is_not_an_error(tmp_path):
     assert load_deny_terms(tmp_path) == []
+
+
+def test_main_warns_on_stderr_when_deny_file_is_absent(tmp_path, monkeypatch, capsys):
+    # An absent .secretscan-deny makes load_deny_terms return [] silently —
+    # the only defence the specs name against leaking internal names then
+    # does nothing while the script still prints "clean". main() must warn.
+    monkeypatch.setattr(
+        "sys.argv", ["check_no_secrets.py", "--root", str(tmp_path)]
+    )
+    assert not (tmp_path / ".secretscan-deny").exists()
+    rc = main()
+    captured = capsys.readouterr()
+    assert rc == 0
+    assert "warning" in captured.err.lower()
+    assert ".secretscan-deny" in captured.err
+
+
+def test_main_does_not_warn_when_deny_file_is_present(tmp_path, monkeypatch, capsys):
+    (tmp_path / ".secretscan-deny").write_text("alpha\n", encoding="utf-8")
+    monkeypatch.setattr(
+        "sys.argv", ["check_no_secrets.py", "--root", str(tmp_path)]
+    )
+    main()
+    captured = capsys.readouterr()
+    assert "warning" not in captured.err.lower()
 
 
 def test_deny_file_ignores_blanks_and_comments(tmp_path):

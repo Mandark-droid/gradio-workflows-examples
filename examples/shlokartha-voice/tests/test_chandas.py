@@ -72,3 +72,20 @@ def test_unknown_metre_reports_low_confidence_not_an_exception():
 def test_empty_input_is_safe():
     out = json.loads(chandas_detect(json.dumps({"iast": "", "padas": []})))
     assert out["metre"] == "Unknown" and out["confidence"] == 0.0
+
+
+def test_normalize_then_chandas_detects_a_full_verse():
+    """The seam that matters: split_padas feeding chandas_detect. Testing them
+    separately is what let a complete verse report Unknown in production."""
+    import json as _json
+    from nodes.normalize import normalize
+
+    full = (
+        "धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः। "
+        "मामकाः पाण्डवाश्चैव किमकुर्वत सञ्जय॥"
+    )
+    normalized = normalize(_json.dumps({"text": full, "source": "typed"}))
+    result = _json.loads(chandas_detect(normalized))
+    assert result["metre"] == "Anuṣṭubh", result
+    assert result["syllables_per_pada"] == [8, 8, 8, 8]
+    assert result["confidence"] >= 0.75

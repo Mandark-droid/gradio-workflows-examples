@@ -69,7 +69,11 @@
     },
     {
       "id": "op_meaning", "label": "Slokartha Commentary", "role": "operator", "kind": "fn", "fn": "shlokartha_meaning",
-      "inputs": [{"id": "verse", "label": "Verse", "type": "text", "required": true}],
+      "inputs": [
+        {"id": "verse", "label": "Verse", "type": "text", "required": true},
+        {"id": "metre_json", "label": "Metre JSON", "type": "text", "required": false},
+        {"id": "normalized_json", "label": "Normalized JSON", "type": "text", "required": false}
+      ],
       "outputs": [{"id": "out_0", "label": "Commentary", "type": "text", "output_index": 0}],
       "data": {}, "x": 1080, "y": 340
     },
@@ -176,6 +180,8 @@
     {"id": "e18", "from_node_id": "ref_text_b", "from_port_id": "out", "to_node_id": "op_normalize_b", "to_port_id": "source_json", "type": "text"},
     {"id": "e19", "from_node_id": "op_normalize_b", "from_port_id": "out_0", "to_node_id": "op_chandas_b", "to_port_id": "normalized_json", "type": "text"},
     {"id": "e20", "from_node_id": "op_chandas_b", "from_port_id": "out_0", "to_node_id": "sub_metre_only", "to_port_id": "in", "type": "text"},
-    {"id": "e21", "from_node_id": "op_verse_text", "from_port_id": "out_0", "to_node_id": "op_meaning", "to_port_id": "verse", "type": "text"}
+    {"id": "e21", "from_node_id": "op_verse_text", "from_port_id": "out_0", "to_node_id": "op_meaning", "to_port_id": "verse", "type": "text"},
+    {"id": "e22", "from_node_id": "op_chandas", "from_port_id": "out_0", "to_node_id": "op_meaning", "to_port_id": "metre_json", "type": "text"},
+    {"id": "e23", "from_node_id": "op_normalize", "from_port_id": "out_0", "to_node_id": "op_meaning", "to_port_id": "normalized_json", "type": "text"}
   ]
 }

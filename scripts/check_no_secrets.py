@@ -153,6 +153,11 @@ def main() -> int:
     args = parser.parse_args()
 
     root = Path(args.root).resolve()
+    if not (root / ".secretscan-deny").exists():
+        print(
+            "warning: no .secretscan-deny found — deny-term scanning is disabled",
+            file=sys.stderr,
+        )
     deny = load_deny_terms(root)
     failures = 0
 

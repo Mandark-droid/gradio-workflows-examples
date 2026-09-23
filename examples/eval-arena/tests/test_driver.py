@@ -31,6 +31,15 @@ def test_corrupt_checkpoint_line_is_skipped_not_fatal(tmp_path):
     assert load_done(path) == {0}
 
 
+def test_load_done_excludes_rows_that_failed_all_retries(tmp_path):
+    # A failed row is still appended (never dropped silently) but must not
+    # count as done, or a resume would skip it forever instead of retrying.
+    path = tmp_path / "run.jsonl"
+    append(path, 0, {"row_id": "ok"})
+    append(path, 1, {"row_index": 1, "error": "RuntimeError: boom", "failure_tag": "error"})
+    assert load_done(path) == {0}
+
+
 def test_checkpoint_records_the_payload(tmp_path):
     path = tmp_path / "run.jsonl"
     append(path, 2, {"row_id": "c", "scores": {}})

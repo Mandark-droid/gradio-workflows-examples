@@ -55,6 +55,6 @@ def write_results(name: str, payload: dict) -> Path:
 
 
 SMALL_SAMPLE_NOTE = (
-    "n=5. Not statistically meaningful. Restore the full test set in "
+    "n=6. Not statistically meaningful. Restore the full test set in "
     "eval/data/ and re-run to obtain a reportable number."
 )

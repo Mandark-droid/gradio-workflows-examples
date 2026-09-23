@@ -14,8 +14,16 @@ def load_done(path: Path) -> set[int]:
         if not line.strip():
             continue
         try:
-            done.add(int(json.loads(line)["row_index"]))
-        except (json.JSONDecodeError, KeyError, TypeError, ValueError):
+            record = json.loads(line)
+            payload = record.get("payload")
+            if isinstance(payload, dict) and payload.get("error"):
+                # A row that failed all retries is still appended (a row
+                # must never be dropped silently), but it did not actually
+                # complete. Counting it done would make a resume skip a
+                # failed row forever instead of retrying it.
+                continue
+            done.add(int(record["row_index"]))
+        except (json.JSONDecodeError, KeyError, TypeError, ValueError, AttributeError):
             continue  # a torn final line must not poison the resume
     return done
 

@@ -54,7 +54,24 @@ def main() -> int:
         except json.JSONDecodeError:
             continue
         payload = entry.get("payload", {})
+        pairs = payload.get("pairs") or []
         for model_id, scored in (payload.get("per_model") or {}).items():
+            # `pairs` survives the driver's merge of the three /scores
+            # subjects but died here — the spec's schema names
+            # judge_outcomes, and dropping every judge verdict at the last
+            # step is what made a published run unauditable.
+            judge_outcomes = []
+            for pair in pairs:
+                a, b = pair.get("a"), pair.get("b")
+                if model_id not in (a, b):
+                    continue
+                opponent = b if model_id == a else a
+                judge_outcomes.append({
+                    "opponent": opponent,
+                    "winner": pair.get("winner"),
+                    "agreed": pair.get("agreed"),
+                    "confidence": pair.get("confidence"),
+                })
             records.append({
                 "run_id": args.run_id,
                 "row_id": payload.get("row_id", ""),
@@ -64,6 +81,7 @@ def main() -> int:
                 "latency_ms": (payload.get("latency") or {}).get(model_id, {}).get("latency_ms"),
                 "tokens_out": (payload.get("latency") or {}).get(model_id, {}).get("tokens_out"),
                 "wins": (payload.get("wins") or {}).get(model_id, 0),
+                "judge_outcomes": judge_outcomes,
                 "workflow_json_hash": payload.get("workflow_json_hash", ""),
                 "candidate_config_hash": payload.get("candidate_config_hash", ""),
             })

@@ -40,8 +40,8 @@ def test_word_f1_of_two_empties_is_one():
 
 def test_testset_has_five_verses_with_required_fields():
     rows = load_testset()
-    assert len(rows) == 5
+    assert len(rows) == 6
     for row in rows:
         assert row["id"] and row["devanagari"] and row["iast"]
         assert row["metre"] and isinstance(row["gold_padaccheda"], list)
-        assert isinstance(row["padas"], list) and len(row["padas"]) == 2
+        assert isinstance(row["padas"], list) and len(row["padas"]) in (2, 4)
