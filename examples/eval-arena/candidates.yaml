@@ -1,0 +1,38 @@
+# Swapping a candidate is a one-line edit here. Nothing downstream changes:
+# the scorer, judge and aggregate nodes never name a model.
+#
+# All four ids confirmed served by Inference Providers on 2026-09-23.
+# Revisions are written by scripts/pin_revisions.py, never by hand.
+
+dataset:
+  dataset_id: ""          # filled by Task 2 after the dataset is pushed
+  dataset_config: default
+  dataset_split: train
+
+judge:
+  model_id: openai/gpt-oss-20b
+  revision: ""
+  max_rationale_words: 60
+  max_new_tokens: 512
+
+# Three of these four are reasoning models: they emit chain-of-thought into
+# reasoning_content and put only the final answer in content. Qwen3 spent 345
+# tokens reasoning about "7 x 23". A 512-token budget would cut a hard row off
+# mid-thought, return empty content, and score it "unparseable" — penalising a
+# model for thinking rather than for being wrong. Hence 1024.
+candidates:
+  - slot: a
+    model_id: Qwen/Qwen3-8B
+    revision: ""
+    max_new_tokens: 1024
+    greedy: true
+  - slot: b
+    model_id: meta-llama/Llama-3.1-8B-Instruct
+    revision: ""
+    max_new_tokens: 1024
+    greedy: true
+  - slot: c
+    model_id: ibm-granite/granite-4.2-8b
+    revision: ""
+    max_new_tokens: 1024
+    greedy: true
