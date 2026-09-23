@@ -25,6 +25,7 @@ dist/
 runs/
 *.ckpt.jsonl
 recordings/
+**/eval/results/
 
 # Secret-scanner deny-list — holds internal names, must never be public
 .secretscan-deny

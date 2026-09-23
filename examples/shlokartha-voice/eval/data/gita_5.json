@@ -1,0 +1,60 @@
+{
+  "_note": "5 Bhagavad Gita verses with gold metre, explicit pada boundaries and gold padaccheda. Reduced from the spec's 100 to hold the project near zero cost; every harness reads its row count from this file, so restoring the full set is a data change. All five verses are Anustubh — see _coverage.",
+  "_coverage": "This set exercises Anustubh only. The other seven metres in the metre table are covered by unit tests against their gana patterns in tests/test_chandas.py, not by real-verse data. Stated plainly so no one reads a 5/5 score as evidence the whole table is validated.",
+  "verses": [
+    {
+      "id": "bg-1.1",
+      "devanagari": "धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः",
+      "iast": "dharmakṣetre kurukṣetre samavetā yuyutsavaḥ",
+      "padas": ["dharmakṣetre kurukṣetre", "samavetā yuyutsavaḥ"],
+      "metre": "Anuṣṭubh",
+      "gold_padaccheda": ["dharmakṣetre", "kurukṣetre", "samavetāḥ", "yuyutsavaḥ"],
+      "reference_translation": "On the field of dharma, the field of the Kurus, gathered together, eager to fight."
+    },
+    {
+      "id": "bg-2.47",
+      "devanagari": "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन",
+      "iast": "karmaṇyevādhikāraste mā phaleṣu kadācana",
+      "padas": ["karmaṇyevādhikāraste", "mā phaleṣu kadācana"],
+      "metre": "Anuṣṭubh",
+      "gold_padaccheda": ["karmaṇi", "eva", "adhikāraḥ", "te", "mā", "phaleṣu", "kadācana"],
+      "reference_translation": "You have a right to action alone, never to its fruits."
+    },
+    {
+      "id": "bg-2.13",
+      "devanagari": "देहिनोऽस्मिन्यथा देहे कौमारं यौवनं जरा",
+      "iast": "dehino'sminyathā dehe kaumāraṃ yauvanaṃ jarā",
+      "padas": ["dehino'sminyathā dehe", "kaumāraṃ yauvanaṃ jarā"],
+      "metre": "Anuṣṭubh",
+      "gold_padaccheda": ["dehinaḥ", "asmin", "yathā", "dehe", "kaumāram", "yauvanam", "jarā"],
+      "reference_translation": "As the embodied soul passes in this body from childhood to youth to old age."
+    },
+    {
+      "id": "bg-4.7",
+      "devanagari": "यदा यदा हि धर्मस्य ग्लानिर्भवति भारत",
+      "iast": "yadā yadā hi dharmasya glānirbhavati bhārata",
+      "padas": ["yadā yadā hi dharmasya", "glānirbhavati bhārata"],
+      "metre": "Anuṣṭubh",
+      "gold_padaccheda": ["yadā", "yadā", "hi", "dharmasya", "glāniḥ", "bhavati", "bhārata"],
+      "reference_translation": "Whenever there is a decline of dharma, O Bharata."
+    },
+    {
+      "id": "bg-6.5",
+      "devanagari": "उद्धरेदात्मनात्मानं नात्मानमवसादयेत्",
+      "iast": "uddharedātmanātmānaṃ nātmānamavasādayet",
+      "padas": ["uddharedātmanātmānaṃ", "nātmānamavasādayet"],
+      "metre": "Anuṣṭubh",
+      "gold_padaccheda": ["uddharet", "ātmanā", "ātmānam", "na", "ātmānam", "avasādayet"],
+      "reference_translation": "Let one lift oneself by oneself; let one not degrade oneself."
+    },
+    {
+      "id": "bg-1.1-full",
+      "devanagari": "धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः। मामकाः पाण्डवाश्चैव किमकुर्वत सञ्जय॥",
+      "iast": "dharmakṣetre kurukṣetre samavetā yuyutsavaḥ । māmakāḥ pāṇḍavāścaiva kimakurvata sañjaya ॥",
+      "padas": ["dharmakṣetre kurukṣetre", "samavetā yuyutsavaḥ", "māmakāḥ pāṇḍavāścaiva", "kimakurvata sañjaya"],
+      "metre": "Anuṣṭubh",
+      "gold_padaccheda": ["dharmakṣetre", "kurukṣetre", "samavetāḥ", "yuyutsavaḥ", "māmakāḥ", "pāṇḍavāḥ", "ca", "eva", "kim", "akurvata", "sañjaya"],
+      "reference_translation": "On the field of dharma, the field of the Kurus, gathered together eager to fight, what did my people and the sons of Pandu do, Sanjaya?"
+    }
+  ]
+}

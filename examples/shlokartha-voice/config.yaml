@@ -1,0 +1,41 @@
+# Every external service, verified public and RUNNING on 2026-09-23.
+asr:
+  backend: shlokartha          # shlokartha | whisper
+  space_id: kshitijthakkar/shlokartha-playground
+  api_name: /transcribe_sanskrit_audio
+  whisper_model_id: openai/whisper-large-v3
+
+shlokartha:
+  space_id: kshitijthakkar/shlokartha-playground
+  # The generator. /sanskrit_commentator only returns a prompt template.
+  api_name: /interpret_sanskrit_verse
+  prompt_only_api_name: /sanskrit_commentator
+  source: bhagavad_gita          # valid enum: mahabharata, ramayana, bhagavad_gita, upanishads, puranas, subhashitas
+  meaning_output_index: 6        # index 6 is the full commentary; index 0 is pada-artha only
+
+tts:
+  space_id: innoai/Edge-TTS-Text-to-Speech
+  api_name: /tts_interface
+  # The runtime value comes from the ref_voice node in workflow.json; this is
+  # the documented default and the value the eval harness should match.
+  default_voice: "hi-IN-MadhurNeural - hi-IN (Male)"
+  rate: 0
+  pitch: 0
+
+# Alternative narration: chants the verse in its detected metre instead of
+# narrating the meaning. Not the default; the spec asks for narration.
+chant:
+  space_id: prathoshap/vagdhenu-demo
+  api_name: /synthesize
+
+flux:
+  model_id: black-forest-labs/FLUX.1-schnell
+  width: 1024
+  height: 768
+
+sandhi:
+  timeout_seconds: 5
+  top_k: 3
+
+chandas:
+  low_trust_below: 0.75

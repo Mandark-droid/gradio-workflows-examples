@@ -1,0 +1,40 @@
+"""Ślōkārtha voice pipeline — a gr.Workflow Space.
+
+Run locally:      python app.py
+Record fixtures:  WORKFLOW_IO_MODE=record python app.py
+"""
+from __future__ import annotations
+
+import os
+
+# A deployed Space is the live context. The record/replay layer defaults to
+# "replay" so development and tests never spend money, but that same default
+# would make ASR return an empty transcription here, silently. setdefault, not
+# a plain assignment, so an operator can still force "record".
+os.environ.setdefault("WORKFLOW_IO_MODE", "live")
+
+import gradio as gr
+
+from nodes.chandas import chandas_detect
+from nodes.hf_io import _utf8_stdout
+from nodes.illustration import illustration_prompt
+from nodes.normalize import normalize, verse_text
+from nodes.sandhi import sandhi_split
+from nodes.source import asr, select_source, shlokartha_meaning
+
+# Keys must exactly match the "fn" value of each kind:"fn" operator in
+# workflow.json, or the canvas cannot resolve the node.
+BINDINGS = {
+    "asr": asr,
+    "select_source": select_source,
+    "shlokartha_meaning": shlokartha_meaning,
+    "normalize": normalize,
+    "verse_text": verse_text,
+    "sandhi_split": sandhi_split,
+    "chandas_detect": chandas_detect,
+    "illustration_prompt": illustration_prompt,
+}
+
+if __name__ == "__main__":
+    _utf8_stdout()
+    gr.Workflow(graph="workflow.json", bind=BINDINGS).launch()
