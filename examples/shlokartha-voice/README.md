@@ -87,3 +87,15 @@ checkpoint trained on
 [`kshitijthakkar/shlokartha-sft`](https://hf.co/datasets/kshitijthakkar/shlokartha-sft).
 Narration uses [Edge TTS](https://hf.co/spaces/innoai/Edge-TTS-Text-to-Speech);
 illustration uses FLUX.1-schnell.
+
+## A limitation worth knowing
+
+The Sanskrit ASR is the `/transcribe_sanskrit_audio` endpoint of the Ślōkārtha
+Space. In testing it returned an empty transcription for text-to-speech audio
+of a verse — synthetic speech is not what it was trained on. Real recited audio
+may fare better, but treat the audio path as the less reliable of the two
+inputs and use the text box when transcription comes back empty.
+
+When no verse is detected the pipeline does not fail: the meaning node returns
+a short message saying so, and the remaining outputs are produced from whatever
+text was available.

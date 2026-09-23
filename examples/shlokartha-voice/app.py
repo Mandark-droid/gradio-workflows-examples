@@ -20,13 +20,14 @@ from nodes.hf_io import _utf8_stdout
 from nodes.illustration import illustration_prompt
 from nodes.normalize import normalize, verse_text
 from nodes.sandhi import sandhi_split
-from nodes.source import asr, select_source
+from nodes.source import asr, select_source, shlokartha_meaning
 
 # Keys must exactly match the "fn" value of each kind:"fn" operator in
 # workflow.json, or the canvas cannot resolve the node.
 BINDINGS = {
     "asr": asr,
     "select_source": select_source,
+    "shlokartha_meaning": shlokartha_meaning,
     "normalize": normalize,
     "verse_text": verse_text,
     "sandhi_split": sandhi_split,
