@@ -1,0 +1,30 @@
+# Local environment — never in a public repo
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# Run artifacts — may contain model outputs and are regenerable
+runs/
+*.ckpt.jsonl
+recordings/
+
+# Secret-scanner deny-list — holds internal names, must never be public
+.secretscan-deny
