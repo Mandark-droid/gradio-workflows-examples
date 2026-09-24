@@ -1,0 +1,98 @@
+{
+  "value": [
+    "*   **देहिनः (dehinaḥ)**: Of the body\n*   **अस्मिन् (asmin)**: In this\n*   **अथ (atha)**: Then / And then\n*   **देहे (dehe)**: In the body\n*   **कौमारं (kaumāraṃ)**: The body\n*   **यौवनं (yauvanam)**: The youth / The youth\n*   **जरा (jarā)**: New age\n*   **आरं (āraṃ)**: The womb / The womb\n*   **यौवनं (yauvanam)**: The youth\n*   **जरा (jarā)**: New age\n*   **अन्वय (anvaya)**: The birth / The birth\n*   **स्त्री (strī)**: A woman\n*   **इह (iha)**: Here / In this matter\n*   **एतत् (etat)**: This\n*   **स",
+    [],
+    "Enable **Uncertainty heatmap** in Decoding to inspect generated-token confidence.",
+    {
+      "headers": [
+        "Pada",
+        "Gloss"
+      ],
+      "data": [
+        [
+          "देहिनः (dehinaḥ)",
+          "Of the body"
+        ],
+        [
+          "अस्मिन् (asmin)",
+          "In this"
+        ],
+        [
+          "अथ (atha)",
+          "Then / And then"
+        ],
+        [
+          "देहे (dehe)",
+          "In the body"
+        ],
+        [
+          "कौमारं (kaumāraṃ)",
+          "The body"
+        ],
+        [
+          "यौवनं (yauvanam)",
+          "The youth / The youth"
+        ],
+        [
+          "जरा (jarā)",
+          "New age"
+        ],
+        [
+          "आरं (āraṃ)",
+          "The womb / The womb"
+        ],
+        [
+          "यौवनं (yauvanam)",
+          "The youth"
+        ],
+        [
+          "जरा (jarā)",
+          "New age"
+        ],
+        [
+          "अन्वय (anvaya)",
+          "The birth / The birth"
+        ],
+        [
+          "स्त्री (strī)",
+          "A woman"
+        ],
+        [
+          "इह (iha)",
+          "Here / In this matter"
+        ],
+        [
+          "एतत् (etat)",
+          "This"
+        ]
+      ],
+      "metadata": null
+    },
+    "Section not detected; see Full commentary.",
+    "Section not detected; see Full commentary.",
+    "### 1. Word-by-Word Translation\n\n*   **देहिनः (dehinaḥ)**: Of the body\n*   **अस्मिन् (asmin)**: In this\n*   **अथ (atha)**: Then / And then\n*   **देहे (dehe)**: In the body\n*   **कौमारं (kaumāraṃ)**: The body\n*   **यौवनं (yauvanam)**: The youth / The youth\n*   **जरा (jarā)**: New age\n*   **आरं (āraṃ)**: The womb / The womb\n*   **यौवनं (yauvanam)**: The youth\n*   **जरा (jarā)**: New age\n*   **अन्वय (anvaya)**: The birth / The birth\n*   **स्त्री (strī)**: A woman\n*   **इह (iha)**: Here / In this matter\n*   **एतत् (etat)**: This\n*   **स",
+    "Load a sample verse to enable automatic reference comparison.",
+    "No matching dataset reference is loaded for this edited verse. Click **Load a sample verse** to compare against an exact dataset row.",
+    {
+      "headers": [
+        "UTC",
+        "Source",
+        "Verse",
+        "Temperature",
+        "Top-p",
+        "Lexical F1"
+      ],
+      "data": [
+        [
+          "2026-09-24 02:29 UTC",
+          "bhagavad_gita",
+          "देहिनोऽस्मिन्यथा देहे कौमारं यौवनं जरा",
+          0.7,
+          0.95,
+          "n/a"
+        ]
+      ],
+      "metadata": null
+    }
+  ]
+}

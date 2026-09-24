@@ -369,7 +369,7 @@ regressions are attributable.
 | `chandas_detect` | 5 Gita verses (typed) | Metre accuracy | 5/5 |
 | `chandas_detect` | Same 5 verses via ASR | Metre accuracy | **Not obtainable with synthetic audio** — depends on the same ASR transcriptions above, which come back empty for TTS audio, so there is no transcript for the metre matcher to score |
 | `sandhi_split` | 5 verses with gold padaccheda | Top-1 / top-3 word F1 | Baseline, then set |
-| `shlokartha` | 5 verses with reference translations | LLM-judge adequacy 1–5 | Verse-only vs verse + padaccheda |
+| `shlokartha` | 6 verses with reference translations | Read adequacy, arm A vs arm B | **Run.** No evidence padaccheda helps — see below |
 
 **Sample size.** The spec called for 50 recorded verses and 100 Gita verses.
 Both were reduced to 5 at the user's direction to hold the project near zero
@@ -387,12 +387,43 @@ understates the difficulty of real chanting — melisma and elongated vowels are
 exactly what a TTS will not reproduce — so this number is a floor, not an
 estimate of field performance.
 
-**Meaning A/B.** The last row is also the experiment that answers the
-padaccheda question. `eval/run_meaning_ab.py` calls `/sanskrit_commentator`
-for the verse-only arm and `/interpret_sanskrit_verse` with the word split
-embedded in `system_prompt` for the augmented arm, then scores both. If the
-augmented arm wins, the `shlokartha` node is rewired to an fn wrapping
-`/interpret_sanskrit_verse`.
+## Meaning A/B: does padaccheda improve the commentary?
+
+**Answer: no evidence that it does. The graph is not rewired.**
+
+This was the spec's open question. Both arms of `eval/run_meaning_ab.py` call
+`/interpret_sanskrit_verse` — the real generator — and differ only in whether
+the padaccheda is named in `system_prompt`. An earlier draft used
+`/sanskrit_commentator` for the verse-only arm; that endpoint was later found
+to return a prompt template rather than a commentary, so the original
+comparison would have been meaningless. Run over all six verses, 12 calls,
+recorded as fixtures so the comparison replays for free.
+
+The arms differ on every verse, but the augmented arm trades one class of
+error for another rather than winning:
+
+- **bg-1.1 — arm B better.** Arm A glosses *kurukṣetre* as "the spiritual
+  realm of the father"; arm B gives "the realm of righteousness, law, and
+  ethics".
+- **bg-2.47 — arm B worse.** Arm A renders *adhikāraḥ* as "the knowledge of
+  the Self"; arm B degenerates into "The higher; the higher; the higher" — a
+  repetition loop the plain prompt did not produce.
+- **bg-2.13 — arm B worse.** Arm A reads *kaumāraṃ* as "the ascetic"; arm B
+  gives "The body" and invents a word, `आरं (āraṃ)`, that is not in the verse.
+  Arm B also flattens *dehinaḥ* from "of the embodied one" to "of the body",
+  losing the very distinction the verse turns on.
+
+Both arms hallucinate independently of the split: each glosses *atha* in
+BG 2.13 where the verse has *yathā*.
+
+**So `op_meaning` keeps its single verse input and no padaccheda injection.**
+The spec said to rewire only if the measurement justified it; it does not.
+
+**Two caveats on this conclusion.** Six verses cannot support a strong claim,
+and adequacy was judged by reading rather than by the LLM judge this table
+originally specified — at this sample size a judge would add false precision,
+not rigour. The fixtures are committed, so anyone can re-read the twelve
+outputs and disagree.
 
 ## Testing strategy
 

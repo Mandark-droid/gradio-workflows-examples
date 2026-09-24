@@ -29,8 +29,11 @@ recordings/
 
 # Secret-scanner deny-list — holds internal names, must never be public
 .secretscan-deny
-docs/
-/docs/
 
 # Controller scratch: plan ledgers and task reports. Never part of the repo.
 .superpowers/
+
+# Implementation plans are working artifacts: long, superseded by the code
+# they produced, and kept locally. The design specs under docs/superpowers/
+# specs/ ARE tracked — they are the binding record of what was built and why.
+docs/superpowers/plans/

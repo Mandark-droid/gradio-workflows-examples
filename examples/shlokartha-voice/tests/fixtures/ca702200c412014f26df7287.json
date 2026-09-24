@@ -1,0 +1,82 @@
+{
+  "value": [
+    "*   **धर्मक्षेत्रे (dharmakṣetre)**: In the field of Dharma (righteousness, duty, moral law).\n*   **कुरुक्षेत्रे (kurukṣetre)**: In the field of Karma.\n*   **समवेता (samavetāḥ)**: Are established / are established / are established.\n*   **युयुत्सवः (yuyutsavaḥ)**: The sons of Yuyutsu (the son of Yuyutsu).\n*   **मामकाः (māmakāḥ)**: My people / my people.\n*   **पाण्डवाः (pāṇḍavāḥ)**: The Pandavas.\n*   **च (ca)**: And.\n*   **एव (eva)**: Indeed / also.\n*   **किम् (kim)**: What?\n*   **अकुर्वत (akurva)**: You all do / you all do.\n*   **सञ्�",
+    [],
+    "Enable **Uncertainty heatmap** in Decoding to inspect generated-token confidence.",
+    {
+      "headers": [
+        "Pada",
+        "Gloss"
+      ],
+      "data": [
+        [
+          "धर्मक्षेत्रे (dharmakṣetre)",
+          "In the field of Dharma (righteousness, duty, moral law)."
+        ],
+        [
+          "कुरुक्षेत्रे (kurukṣetre)",
+          "In the field of Karma."
+        ],
+        [
+          "समवेता (samavetāḥ)",
+          "Are established / are established / are established."
+        ],
+        [
+          "युयुत्सवः (yuyutsavaḥ)",
+          "The sons of Yuyutsu (the son of Yuyutsu)."
+        ],
+        [
+          "मामकाः (māmakāḥ)",
+          "My people / my people."
+        ],
+        [
+          "पाण्डवाः (pāṇḍavāḥ)",
+          "The Pandavas."
+        ],
+        [
+          "च (ca)",
+          "And."
+        ],
+        [
+          "एव (eva)",
+          "Indeed / also."
+        ],
+        [
+          "किम् (kim)",
+          "What?"
+        ],
+        [
+          "अकुर्वत (akurva)",
+          "You all do / you all do."
+        ]
+      ],
+      "metadata": null
+    },
+    "Section not detected; see Full commentary.",
+    "Section not detected; see Full commentary.",
+    "### 1. Word-by-Word Translation\n\n*   **धर्मक्षेत्रे (dharmakṣetre)**: In the field of Dharma (righteousness, duty, moral law).\n*   **कुरुक्षेत्रे (kurukṣetre)**: In the field of Karma.\n*   **समवेता (samavetāḥ)**: Are established / are established / are established.\n*   **युयुत्सवः (yuyutsavaḥ)**: The sons of Yuyutsu (the son of Yuyutsu).\n*   **मामकाः (māmakāḥ)**: My people / my people.\n*   **पाण्डवाः (pāṇḍavāḥ)**: The Pandavas.\n*   **च (ca)**: And.\n*   **एव (eva)**: Indeed / also.\n*   **किम् (kim)**: What?\n*   **अकुर्वत (akurva)**: You all do / you all do.\n*   **सञ्�",
+    "Load a sample verse to enable automatic reference comparison.",
+    "No matching dataset reference is loaded for this edited verse. Click **Load a sample verse** to compare against an exact dataset row.",
+    {
+      "headers": [
+        "UTC",
+        "Source",
+        "Verse",
+        "Temperature",
+        "Top-p",
+        "Lexical F1"
+      ],
+      "data": [
+        [
+          "2026-09-24 02:31 UTC",
+          "bhagavad_gita",
+          "धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः। मामकाः पाण्डवाश्चैव किमकुर्वत सञ्जय॥",
+          0.7,
+          0.95,
+          "n/a"
+        ]
+      ],
+      "metadata": null
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "value": [
+    "*   **कर्मणि (karmaṇi):** In action; in action.\n*   **एव (eva):** Indeed; only; alone.\n*   **अधिकारः (adhikāraḥ):** The higher; the higher; the higher.\n*   **ते (te):** Your; of you.\n*   **मा (mā):** Do not.\n*   **फलेषु (phaleṣu):** In the fruits; in the results; in the result.\n*   **कदाचन्ते (kadācante):** They are able; they are able.\n*   **अन्वय (anvaya):** Without having performed; without having done.\n*   **अधिकारः (adhikāraḥ):** The higher; the lower.\n*   **ते (te):** They.\n*   **मा (mā):** Do not.\n*   **फलार्थ (phalārtha):** For the sake of fruit; for the purpose of fruit.\n*",
+    [],
+    "Enable **Uncertainty heatmap** in Decoding to inspect generated-token confidence.",
+    {
+      "headers": [
+        "Pada",
+        "Gloss"
+      ],
+      "data": [
+        [
+          "कर्मणि (karmaṇi)",
+          "In action; in action."
+        ],
+        [
+          "एव (eva)",
+          "Indeed; only; alone."
+        ],
+        [
+          "अधिकारः (adhikāraḥ)",
+          "The higher; the higher; the higher."
+        ],
+        [
+          "ते (te)",
+          "Your; of you."
+        ],
+        [
+          "मा (mā)",
+          "Do not."
+        ],
+        [
+          "फलेषु (phaleṣu)",
+          "In the fruits; in the results; in the result."
+        ],
+        [
+          "कदाचन्ते (kadācante)",
+          "They are able; they are able."
+        ],
+        [
+          "अन्वय (anvaya)",
+          "Without having performed; without having done."
+        ],
+        [
+          "अधिकारः (adhikāraḥ)",
+          "The higher; the lower."
+        ],
+        [
+          "ते (te)",
+          "They."
+        ],
+        [
+          "मा (mā)",
+          "Do not."
+        ],
+        [
+          "फलार्थ (phalārtha)",
+          "For the sake of fruit; for the purpose of fruit."
+        ]
+      ],
+      "metadata": null
+    },
+    "Section not detected; see Full commentary.",
+    "Section not detected; see Full commentary.",
+    "### 1. Word-by-Word Translation\n\n*   **कर्मणि (karmaṇi):** In action; in action.\n*   **एव (eva):** Indeed; only; alone.\n*   **अधिकारः (adhikāraḥ):** The higher; the higher; the higher.\n*   **ते (te):** Your; of you.\n*   **मा (mā):** Do not.\n*   **फलेषु (phaleṣu):** In the fruits; in the results; in the result.\n*   **कदाचन्ते (kadācante):** They are able; they are able.\n*   **अन्वय (anvaya):** Without having performed; without having done.\n*   **अधिकारः (adhikāraḥ):** The higher; the lower.\n*   **ते (te):** They.\n*   **मा (mā):** Do not.\n*   **फलार्थ (phalārtha):** For the sake of fruit; for the purpose of fruit.\n*",
+    "Load a sample verse to enable automatic reference comparison.",
+    "No matching dataset reference is loaded for this edited verse. Click **Load a sample verse** to compare against an exact dataset row.",
+    {
+      "headers": [
+        "UTC",
+        "Source",
+        "Verse",
+        "Temperature",
+        "Top-p",
+        "Lexical F1"
+      ],
+      "data": [
+        [
+          "2026-09-24 02:29 UTC",
+          "bhagavad_gita",
+          "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन",
+          0.7,
+          0.95,
+          "n/a"
+        ]
+      ],
+      "metadata": null
+    }
+  ]
+}
