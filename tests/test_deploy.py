@@ -3,6 +3,7 @@ import subprocess
 
 import pytest
 from pathlib import Path
+from scripts.check_no_secrets import Finding
 from scripts.deploy import build_file_list, EXAMPLES, SKIP_DIRS
 
 
@@ -54,6 +55,11 @@ def test_deploy_requires_a_token(monkeypatch):
     # Deterministic regardless of what this machine has stored: force the
     # "no credential anywhere" case rather than relying on the environment.
     monkeypatch.setattr(deploy, "_resolve_token", lambda: None)
+    # deploy() scans the whole repo before it even looks at the token, so a
+    # stray untracked file elsewhere in the working tree can make this test
+    # fail for a reason that has nothing to do with token handling. Stub the
+    # scanner so this test exercises only what it claims to.
+    monkeypatch.setattr(deploy, "scan_repo", lambda *a, **k: [])
     assert deploy.deploy("shlokartha-voice", "owner/name", dry_run=False) == 2
 
 
@@ -77,6 +83,10 @@ def test_dry_run_skips_token_and_dirty_tree_checks(monkeypatch):
 
     monkeypatch.delenv("HF_TOKEN", raising=False)
     monkeypatch.setattr(deploy, "_resolve_token", lambda: None)
+    # Same isolation as test_deploy_requires_a_token above: this test is
+    # about dry-run short-circuiting, not the scanner's view of whatever is
+    # currently sitting untracked in the working tree.
+    monkeypatch.setattr(deploy, "scan_repo", lambda *a, **k: [])
 
     real_run = subprocess.run
 
@@ -90,6 +100,19 @@ def test_dry_run_skips_token_and_dirty_tree_checks(monkeypatch):
 
     monkeypatch.setattr(deploy.subprocess, "run", _guard)
     assert deploy.deploy("shlokartha-voice", "owner/name", dry_run=True) == 0
+
+
+def test_deploy_refuses_when_the_scanner_reports_a_finding(monkeypatch):
+    from scripts import deploy
+
+    # The mirror image of the two isolated tests above: with a real (faked)
+    # finding, deploy() must refuse before it even looks at the token or the
+    # working tree, so this behaviour stays covered now that those two stub
+    # scan_repo out.
+    finding = Finding(line_no=1, kind="token", snippet="a token-shaped string was here")
+    fake_path = deploy.ROOT / "some" / "file.py"
+    monkeypatch.setattr(deploy, "scan_repo", lambda *a, **k: [(fake_path, finding)])
+    assert deploy.deploy("shlokartha-voice", "owner/name", dry_run=False) == 1
 
 
 def test_deploy_refuses_dirty_tree(monkeypatch):
