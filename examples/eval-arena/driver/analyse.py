@@ -1,9 +1,10 @@
 """Run-level analysis: mean score with bootstrap CI, Bradley-Terry ratings
 from pairwise outcomes, and latency percentiles.
 
-At five rows none of these is statistically meaningful. The implementations
-are the deliverable; every reported number carries SMALL_SAMPLE_NOTE, and the
-command to re-run at a real sample size is printed alongside it.
+At a small sample size none of these is statistically meaningful. The
+implementations are the deliverable; every reported number carries a note
+naming the actual row count analysed, and the command to re-run at a real
+sample size is printed alongside it.
 
     python driver/analyse.py --checkpoint runs/run_x.ckpt.jsonl
 """
@@ -17,11 +18,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-SMALL_SAMPLE_NOTE = (
-    "n=5. These figures are NOT statistically meaningful. A bootstrap CI, a "
-    "Bradley-Terry rating and a judge-agreement rate all need far more rows. "
-    "Re-run with a larger dataset to obtain reportable numbers."
-)
+
+def small_sample_note(n_rows: int) -> str:
+    return (
+        f"n={n_rows}. These figures are NOT statistically meaningful. A "
+        "bootstrap CI, a Bradley-Terry rating and a judge-agreement rate all "
+        "need far more rows. Re-run with a larger dataset to obtain "
+        "reportable numbers."
+    )
 
 
 def bootstrap_ci(
@@ -146,7 +150,10 @@ def main() -> int:
             f"| {stats['p95']} | {int(round(mean_reasoning))} | {ratings.get(model_id, 0.0)} |"
         )
 
-    print(f"\n{SMALL_SAMPLE_NOTE}")
+    print(f"\n{small_sample_note(len(records))}")
+    print("\nRe-run at a larger sample:")
+    print("  python dataset/build_eval_dataset.py --push <your-dataset-id>   # add rows first")
+    print("  python driver/run_batch.py --space <owner>/eval-arena-workflow --rows <N>")
     return 0
 
 

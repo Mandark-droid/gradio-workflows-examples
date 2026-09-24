@@ -1,5 +1,4 @@
 import json
-import pytest
 from nodes.chandas import syllabify, weights, ganas, chandas_detect, GANA_PATTERNS
 
 

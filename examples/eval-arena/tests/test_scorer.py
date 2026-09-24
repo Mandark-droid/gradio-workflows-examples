@@ -1,5 +1,4 @@
 import json
-import pytest
 from nodes.scorer import deterministic_scorer, score_one, FAILURE_TAGS
 
 
@@ -104,3 +103,17 @@ def test_malformed_envelope_does_not_crash_the_node():
         "not json", _env("m2", "Tokyo"), _env("m3", "Tokyo"), _gold("tokyo", "exact")
     ))
     assert "per_model" in result
+
+
+def test_empty_model_id_falls_back_to_slot_letter_not_index():
+    # Slot "a" is the first envelope. An empty model_id must key on the
+    # letter (slot_a), matching judge.py's fallback, not the integer index
+    # (slot_0) — otherwise the same malformed envelope is keyed differently
+    # in per_model vs. pairs and aggregate treats it as two models.
+    result = json.loads(deterministic_scorer(
+        _env("", "Tokyo"), _env("m2", "Osaka"), _env("m3", "Tokyo"),
+        _gold("tokyo", "exact"),
+    ))
+    assert "slot_a" in result["per_model"]
+    assert "slot_0" not in result["per_model"]
+    assert "" not in result["per_model"]

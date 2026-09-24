@@ -1,5 +1,4 @@
 import json
-import pytest
 from nodes import judge, arena_io
 
 
@@ -132,6 +131,20 @@ def test_judge_error_never_includes_the_token(monkeypatch):
     )
     for pair in result["pairs"]:
         assert "secret-token-abc123" not in pair["judge_error"]
+
+
+def test_empty_model_id_falls_back_to_slot_letter_not_index(monkeypatch):
+    # An empty model_id must key on the slot letter (slot_a), matching
+    # scorer.py's fallback, not the integer index (slot_0) — otherwise the
+    # same malformed envelope is keyed differently in per_model vs. pairs
+    # and aggregate treats it as two different models.
+    monkeypatch.setattr(arena_io, "chat",
+                        lambda *a, **k: ('{"winner":"A","confidence":0.9,"rationale":"x"}', 1, 1, 0))
+    result = json.loads(judge.pairwise_judge(_env(""), _env("m2"), _env("m3"), "p"))
+    ids = {pair["a"] for pair in result["pairs"]} | {pair["b"] for pair in result["pairs"]}
+    assert "slot_a" in ids
+    assert "slot_0" not in ids
+    assert "" not in ids
 
 
 def test_candidate_with_an_error_envelope_loses(monkeypatch):

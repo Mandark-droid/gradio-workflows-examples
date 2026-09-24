@@ -1,5 +1,5 @@
 import pytest
-from driver.analyse import bootstrap_ci, bradley_terry, percentiles, SMALL_SAMPLE_NOTE
+from driver.analyse import bootstrap_ci, bradley_terry, percentiles, small_sample_note
 
 
 def test_bootstrap_ci_of_constant_values_is_that_constant():
@@ -53,4 +53,9 @@ def test_percentiles_of_empty_input_is_zero():
 
 
 def test_small_sample_note_is_explicit():
-    assert "not statistically meaningful" in SMALL_SAMPLE_NOTE.lower()
+    assert "not statistically meaningful" in small_sample_note(5).lower()
+
+
+def test_small_sample_note_reports_the_actual_row_count():
+    assert "n=5" in small_sample_note(5)
+    assert "n=42" in small_sample_note(42)

@@ -7,6 +7,12 @@ def _isolated(tmp_path, monkeypatch):
     monkeypatch.setattr(arena_io, "FIXTURE_DIR", tmp_path)
     monkeypatch.setenv("ARENA_IO_MODE", "replay")
     arena_io.load_candidates.cache_clear()
+    # config_hash is also lru_cache'd and derives from load_candidates(), so
+    # it must be cleared alongside it — otherwise a test that reads
+    # config_hash() before any mutation can get a value cached by an earlier
+    # test that already mutated the config, making a before/after comparison
+    # vacuous depending on test order.
+    arena_io.config_hash.cache_clear()
 
 
 def test_replay_is_the_default(monkeypatch):

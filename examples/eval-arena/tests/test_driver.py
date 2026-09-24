@@ -1,5 +1,4 @@
 import json
-import pytest
 from driver.checkpoint import load_done, append
 from driver.run_batch import project_cost, CALLS_PER_ROW
 

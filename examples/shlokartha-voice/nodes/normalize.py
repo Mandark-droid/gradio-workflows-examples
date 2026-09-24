@@ -21,9 +21,15 @@ _SCHEME_BY_NAME = {
 
 
 def _detect_scheme(text: str) -> str:
+    """Detect the input script.
+
+    Falls back to IAST because it is the safest default: transliterating
+    IAST-as-IAST is a no-op, so a misdetection degrades to leaving the text
+    alone rather than mangling it.
+    """
     try:
         return str(_detect.detect(text)).lower()
-    except Exception:
+    except (AttributeError, TypeError, ValueError, KeyError, IndexError):
         return "iast"
 
 

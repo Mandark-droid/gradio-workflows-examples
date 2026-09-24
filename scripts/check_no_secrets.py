@@ -7,6 +7,7 @@ never itself a public artifact.
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import re
 import subprocess
 import sys
@@ -96,11 +97,18 @@ def _parse_gitignore(root: Path) -> set[str]:
 
 
 def _should_skip(path: Path, root: Path, gitignore_patterns: set[str]) -> bool:
-    """Check if a path matches gitignore patterns."""
+    """Check if a path matches gitignore patterns.
+
+    A pattern containing `*` or `?` is matched with fnmatch against each
+    path component; everything else is matched literally, as before.
+    """
     rel = path.relative_to(root)
     parts = rel.parts
     for pattern in gitignore_patterns:
-        if pattern in parts:
+        if "*" in pattern or "?" in pattern:
+            if any(fnmatch.fnmatch(part, pattern) for part in parts):
+                return True
+        elif pattern in parts:
             return True
     return False
 

@@ -1,7 +1,6 @@
 # tests/test_deploy.py
 import subprocess
 
-import pytest
 from pathlib import Path
 from scripts.check_no_secrets import Finding
 from scripts.deploy import build_file_list, EXAMPLES, SKIP_DIRS

@@ -1,6 +1,5 @@
 # tests/test_check_no_secrets.py
 from pathlib import Path
-import pytest
 from scripts.check_no_secrets import scan_text, scan_repo, load_deny_terms, main
 
 
@@ -98,6 +97,16 @@ def test_tmp_path_does_not_blind_the_scanner():
 def test_deny_term_is_caught_alongside_common_words():
     findings = scan_text("the findings mention SecretProject", ["secretproject"])
     assert [f.kind for f in findings] == ["deny_term"]
+
+
+def test_scan_repo_honours_glob_patterns_in_gitignore(tmp_path):
+    # tmp_path is not a git repo, so scan_repo falls back to the
+    # non-git _parse_gitignore/_should_skip path, which must understand
+    # glob patterns (not just literal path-component names).
+    (tmp_path / ".gitignore").write_text("*.txt\n", encoding="utf-8")
+    (tmp_path / "notes.txt").write_text("/home/someone/leak", encoding="utf-8")
+    (tmp_path / "clean.py").write_text("x = 1", encoding="utf-8")
+    assert scan_repo(tmp_path, []) == []
 
 
 def test_scanner_own_test_file_is_exempt(tmp_path):

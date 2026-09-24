@@ -72,7 +72,7 @@ def score_one(
     if answer_type == "truncation":
         if _normalize(gold) in _normalize(text):
             return 1.0, None
-        return 0.0, "truncated" if tokens_out >= token_cap else "wrong"
+        return 0.0, "wrong"
 
     return (1.0, None) if _normalize(text) == _normalize(gold) else (0.0, "wrong")
 

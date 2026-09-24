@@ -102,7 +102,8 @@ def pairwise_judge(env_a: str, env_b: str, env_c: str, prompt: str, hf_token: st
 
     envelopes = [_load(env_a), _load(env_b), _load(env_c)]
     for index, envelope in enumerate(envelopes):
-        envelope.setdefault("model_id", f"slot_{index}")
+        if not envelope.get("model_id"):
+            envelope["model_id"] = f"slot_{'abc'[index]}"
 
     combos = list(itertools.combinations(range(3), 2))
 
