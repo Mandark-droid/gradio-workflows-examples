@@ -16,6 +16,7 @@ import hashlib
 import json
 import os
 import sys
+import tempfile
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -83,6 +84,16 @@ def _hf_token() -> str | None:
     return os.environ.get("HF_TOKEN") or None
 
 
+def _looks_like_local_file(value: object) -> bool:
+    """A Space that returns a file gives gradio_client a local temp path."""
+    if not isinstance(value, str) or not value:
+        return False
+    try:
+        return os.path.exists(value) and os.path.isfile(value)
+    except (OSError, ValueError):
+        return False
+
+
 def call_space(
     space_id: str, api_name: str, *args: Any, result_index: int | None = None
 ) -> Any:
@@ -90,8 +101,22 @@ def call_space(
     current = mode()
 
     if current == "replay":
-        record, _ = read_fixture(key)
+        record, binary = read_fixture(key)
         value = record["value"]
+        if binary is not None:
+            # A file-shaped result: the recorded value has the path slot(s)
+            # replaced with None, and the bytes live in the .bin sidecar.
+            # Materialize them to a fresh temp file — downstream only needs
+            # a readable path, not the one from the recording machine.
+            suffix = record.get("file_suffix", "")
+            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+                tmp.write(binary)
+                replay_path = tmp.name
+            if result_index is None:
+                value = replay_path
+            elif isinstance(value, list):
+                value = list(value)
+                value[result_index] = replay_path
     else:
         from gradio_client import Client
 
@@ -100,7 +125,31 @@ def call_space(
         if isinstance(value, tuple):
             value = list(value)
         if current == "record":
-            write_fixture(key, {"value": value})
+            file_candidate = None
+            if result_index is None:
+                if _looks_like_local_file(value):
+                    file_candidate = value
+            elif isinstance(value, list) and 0 <= result_index < len(value):
+                if _looks_like_local_file(value[result_index]):
+                    file_candidate = value[result_index]
+
+            if file_candidate is not None:
+                # Never write the recording machine's absolute path into the
+                # fixture — persist the bytes instead, the same way
+                # call_model_text_to_image already does.
+                suffix = Path(file_candidate).suffix
+                binary = Path(file_candidate).read_bytes()
+                if result_index is None:
+                    stored_value = None
+                else:
+                    stored_value = list(value)
+                    stored_value[result_index] = None
+                write_fixture(
+                    key, {"value": stored_value, "file_suffix": suffix},
+                    binary=binary,
+                )
+            else:
+                write_fixture(key, {"value": value})
 
     if result_index is not None and isinstance(value, list):
         return value[result_index]
