@@ -365,9 +365,9 @@ regressions are attributable.
 
 | Stage | Test set | Metric | Target |
 | --- | --- | --- | --- |
-| `asr` | 5 verses × 3 synthetic voices | Character error rate on IAST | < 8% |
+| `asr` | 5 verses × 3 synthetic voices | Character error rate on IAST | **Not obtainable with synthetic audio** — verified live that `/transcribe_sanskrit_audio` returns an empty transcription for TTS-generated speech, so CER measured this way reflects the upstream ASR's behaviour on synthetic audio, not this pipeline; see `eval/run_asr_eval.py` |
 | `chandas_detect` | 5 Gita verses (typed) | Metre accuracy | 5/5 |
-| `chandas_detect` | Same 5 verses via ASR | Metre accuracy | ≥ 4/5 |
+| `chandas_detect` | Same 5 verses via ASR | Metre accuracy | **Not obtainable with synthetic audio** — depends on the same ASR transcriptions above, which come back empty for TTS audio, so there is no transcript for the metre matcher to score |
 | `sandhi_split` | 5 verses with gold padaccheda | Top-1 / top-3 word F1 | Baseline, then set |
 | `shlokartha` | 5 verses with reference translations | LLM-judge adequacy 1–5 | Verse-only vs verse + padaccheda |
 

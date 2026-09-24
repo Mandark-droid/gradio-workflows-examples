@@ -107,3 +107,9 @@ inputs and use the text box when transcription comes back empty.
 When no verse is detected the pipeline does not fail: the meaning node returns
 a short message saying so, and the remaining outputs are produced from whatever
 text was available.
+
+This is also why the ASR character-error-rate row in the evaluation table
+is unfilled: `eval/run_asr_eval.py` synthesizes its audio with the same kind
+of TTS, so it gets the same empty transcriptions and cannot produce a
+meaningful CER — the harness is kept because it works unchanged against real
+recorded audio.
